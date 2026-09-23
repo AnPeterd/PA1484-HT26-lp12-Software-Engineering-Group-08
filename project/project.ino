@@ -49,7 +49,7 @@ static void create_ui()
   t1 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
   t2 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
 
-  // Tile #1
+  // Tile #1, Screen1
   {
     t1_label = lv_label_create(t1);
     lv_label_set_text(t1_label, "Hello Students");
@@ -58,7 +58,8 @@ static void create_ui()
     apply_tile_colors(t1, t1_label, /*dark=*/false);
   }
 
-  // Tile #2
+
+  // Tile #2, Screen2
   {
     t2_label = lv_label_create(t2);
     lv_label_set_text(t2_label, "Welcome to the workshop");
