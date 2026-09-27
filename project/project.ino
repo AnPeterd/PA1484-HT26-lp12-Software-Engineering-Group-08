@@ -250,7 +250,6 @@ void setup()
   beginLvglHelper(amoled);   // init LVGL for this board
 
   create_ui();
-  // ui_init_all("1.0.0");
   connect_wifi();
 }
 
