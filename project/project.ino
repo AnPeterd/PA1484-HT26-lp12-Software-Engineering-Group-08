@@ -9,6 +9,8 @@
 #include <lvgl.h>
 
 #include "secrets.h"
+#include "WiFi.hpp"
+#include "HTTP.hpp"
 
 
 
@@ -216,8 +218,10 @@ static void create_ui()
 
 
 // Function: Connects to WIFI
-static void connect_wifi()
+static int8_t connect_wifi()
 {
+  IPAddress ipv4; //empty template IPs
+
   Serial.printf("Connecting to WiFi SSID: %s\n", WIFI_SSID);
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -228,10 +232,35 @@ static void connect_wifi()
   }
   Serial.println();
 
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("WiFi connected.");
-  } else {
-    Serial.println("WiFi could not connect (timeout).");
+  wl_status_t wifi_status = WiFi.status();
+
+  switch (wifi_status) // a bit nore advanced troubleshooting info
+  {
+    case (WL_CONNECTED): 
+    Serial.println("WiFi connected succesfully.");
+    ipv4 = WiFi.localIP();
+    Serial.println(ipv4);
+    return 1;
+    case (WL_IDLE_STATUS): 
+    Serial.println ("Pending WiFi status (timeout WL_IDLE_STATUS).");
+    return -1;
+    case (WL_CONNECT_FAILED):
+    Serial.println ("WiFi connection failed (WL_CONNECT_FAILED).");
+    return -1;
+    case (WL_NO_SSID_AVAIL):
+    Serial.println ("WiFi network not found (WL_NO_SSID_AVAIL)");
+    return -1;
+    case (WL_DISCONNECTED):
+    Serial.println ("WiFi not active (WL_DISCONNECTED)");
+    return -1;
+    case (WL_CONNECTION_LOST):
+    Serial.println ("WiFi connected, but connection lost (WL_CONNECTION_LOST)");
+    return -1;
+    default:
+    Serial.println ("Unexpectrd WiFi error:");
+    Serial.println (wifi_status);
+    return 0;
+
   }
 }
 
@@ -250,8 +279,7 @@ void setup()
   beginLvglHelper(amoled);   // init LVGL for this board
 
   create_ui();
-  // ui_init_all("1.0.0");
-  connect_wifi();
+  int8_t WiFi_code = connect_wifi(); // for future error handling 
 }
 
 // Must have function: Loop runs continously on device after setup
