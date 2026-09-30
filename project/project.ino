@@ -12,25 +12,8 @@
 #include "WiFi.hpp"
 #include "HTTP.hpp"
 
+#include "departures.hpp"
 
-
-
-// Data structures to hold departure information
-// DepartureItem: Lagrar info om en enskild avgång (tid, linje, destination, status).
-struct DepartureItem {
-    char time[16];
-    char line[16];
-    char destination[64];
-    char status[32];
-};
-
-
-// StopData: Lagrar hållplatsens namn och en lista med upp till 5 avgångar.
-struct StopData {
-    char stopName[64];
-    DepartureItem departures[5];
-    int count;
-};
 
 
 static lv_obj_t* tileview;
