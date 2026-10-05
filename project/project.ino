@@ -134,7 +134,19 @@ void setup()
   beginLvglHelper(amoled);   // init LVGL for this board
 
   create_ui();
-  int8_t WiFi_code = connect_wifi(); // for future error handling 
+  int8_t WiFi_code = connect_wifi(); // for future error handling
+  
+  //Testing requests
+  bool request_result = false;
+  if (WiFi_code==1)
+  {
+    request_result = request_send("740032188");
+  }
+  if (request_result == false)
+  {
+    Serial.println ("Network not avaliable");
+    //Possible event here
+  }
 }
 
 // Must have function: Loop runs continously on device after setup

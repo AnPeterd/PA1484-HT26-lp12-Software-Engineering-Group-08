@@ -12,7 +12,7 @@ bool request_send(String stop_id)
 
     HTTPClient http; 
 
-    String url = String("https://realtime-api.trafiklab.se/v1/departures/") + stop_id + "?key=" + API_KEY; // creation of URL for the upcoming request
+    String url = String("https://realtime-api.trafiklab.se/v1/departures/") + stop_id + "/?key=" + API_KEY; // creation of URL for the upcoming request
     
     bool begin_result = http.begin(url);
 
@@ -26,7 +26,7 @@ bool request_send(String stop_id)
 
     int short_code = http_code/100;
 
-    switch (short_code)
+    switch (short_code)//Error handling and debug info
     {
         case (1):
         Serial.println ("Code 1xx: Informational response (weak TRUE - continues)");
@@ -63,9 +63,20 @@ bool request_send(String stop_id)
         return false;
     }
 
-    String response = http.getString(); //THIS IS A BAD WAY TO HANDLE JSON FILES! NEED TO REPLACE! (good enough for now)
+    String* response = new String(http.getString()); //THIS IS A BAD WAY TO HANDLE JSON FILES! FOR PRACTICE ONLY!
 
-    Serial.println(response);
+    //The main cincerne is about the memory of the ESP - cheking if there is enough room for further operations
+    Serial.printf("JSON size: %u bytes\n", (*response).length()); 
+    Serial.printf("Free heap before parse: %u \n", ESP.getFreeHeap());
+
+    //Parsing function here
+
+    //Stream& response = http.getStream(); //This is a GOOD way, BUT a function MUST be ready to read from the stream - only working when member C is ready!
+
+    Serial.println(*response);
+
+    delete response;
+    response = nullptr;
 
     http.end(); //closing the HTTP connection
     return true;
@@ -79,7 +90,7 @@ bool stop_lookup (String user_input) //The API allows to lookup (!!) stops. With
     String url = String("https://realtime-api.trafiklab.se/v1/stops/name/") + user_input + "/?key=" + API_KEY;
 
     http.begin(url);
-    
+
     int http_code = http.GET();
 
     int short_code = http_code/100;
@@ -95,6 +106,8 @@ bool stop_lookup (String user_input) //The API allows to lookup (!!) stops. With
     // TEMPORARY BLOCK HERE!!!     
     String response = http.getString(); //THIS IS A BAD WAY TO HANDLE JSON FILES! NEED TO REPLACE! (good enough for now)
 
+    //Stream& response = http.getStream(); //This is a GOOD way, BUT a function MUST be ready to read from the stream - only working when member C is ready!
+    
     Serial.println(response);
 
     http.end(); //closing the HTTP connection
