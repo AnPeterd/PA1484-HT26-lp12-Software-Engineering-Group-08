@@ -12,7 +12,7 @@ bool request_send(String stop_id)
 
     HTTPClient http; 
 
-    String url = String("https://realtime-api.trafiklab.se/v1/departures/") + stop_id + "/?key=" + API_KEY; // creation of URL for the upcoming request
+    String url = String("https://realtime-api.trafiklab.se/v1/departures/") + stop_id + "?key=" + API_KEY; // creation of URL for the upcoming request
     
     bool begin_result = http.begin(url);
 
