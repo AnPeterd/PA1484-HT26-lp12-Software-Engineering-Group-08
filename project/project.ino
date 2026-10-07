@@ -279,7 +279,7 @@ void setup()
   beginLvglHelper(amoled);   // init LVGL for this board
 
   create_ui();
-  int8_t WiFi_code = connect_wifi(); // for future error handling
+  int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
   
   //Testing requests
   bool request_result = false;
@@ -297,6 +297,20 @@ void setup()
 // Must have function: Loop runs continously on device after setup
 void loop()
 {
+  //when ready - current_stop variable should be here 
+  const Stop& current_stop = STOPS[0]; //Placeholder; When proper objects are ready - should be replaced
+
+  //US4.1: As a user, I want the live departure data to update automatically in 60 seconds
+
+  static long lastRefresh = 0;
+
+if (millis() - lastRefresh >= 60000) {
+    request_send(current_stop.id);
+    lastRefresh = millis();
+    //Error handling can be placed here
+}
+
+
   lv_timer_handler();
   delay(5);
 }
