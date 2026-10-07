@@ -114,7 +114,7 @@ static void create_ui()
 // Hjälpfunktion för att lägga till Settings-knappen på skärm
 static void add_settings_button(lv_obj_t *parent) {
     lv_obj_t *btn_set = lv_btn_create(parent);
-    lv_obj_set_size(btn_set, 70, 30);
+    lv_obj_set_size(btn_set, 90, 50);
     lv_obj_align(btn_set, LV_ALIGN_TOP_RIGHT, -10, 10);
     lv_obj_t *lbl_s = lv_label_create(btn_set);
     lv_label_set_text(lbl_s, "Settings");
@@ -138,7 +138,6 @@ static void create_ui()
   
   // --- 1. START SCREEN (Tile 0) ---
   {
-    add_settings_button(t_start);
 
     lv_obj_t *title = lv_label_create(t_start);
     lv_label_set_text(title, "Public Transport Info");
@@ -173,7 +172,7 @@ static void create_ui()
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
 
     dep_list_container = lv_obj_create(t_departures);
-    lv_obj_set_size(dep_list_container, 220, 175);
+    lv_obj_set_size(dep_list_container, 400, 320);
     lv_obj_align(dep_list_container, LV_ALIGN_CENTER, 0, 15);
     lv_obj_set_flex_flow(dep_list_container, LV_FLEX_FLOW_COLUMN);
   }
@@ -189,29 +188,34 @@ static void create_ui()
     // Dropdown för hållplatser
     dropdown_stops = lv_dropdown_create(t_settings);
     lv_dropdown_set_options(dropdown_stops, "Campus Grasvik\nKarlskrona Centralstation\nBergasa Station\nHultvagen\nLango");
-    lv_obj_set_size(dropdown_stops, 210, 35);
-    lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -45);
+    lv_obj_set_size(dropdown_stops, 230, 55);
+    lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -65);
 
     // Dropdown för transporttyper
     dropdown_transport = lv_dropdown_create(t_settings);
-    lv_dropdown_set_options(dropdown_transport, "All\nBus\nTrain\nFerry");
-    lv_obj_set_size(dropdown_transport, 210, 35);
+    lv_dropdown_set_options(dropdown_transport, "All Transport Types\nBus\nTrain\nFerry");
+    lv_obj_set_size(dropdown_transport, 230, 55);
     lv_obj_align(dropdown_transport, LV_ALIGN_CENTER, 0, 0);
 
     // Spara- och återställningsknappar
     lv_obj_t *btn_save = lv_btn_create(t_settings);
-    lv_obj_set_size(btn_save, 95, 30);
-    lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -55, -15);
+    lv_obj_set_size(btn_save, 115, 50);
+    lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -55, -45);
     lv_obj_t *lbl_save = lv_label_create(btn_save);
     lv_label_set_text(lbl_save, "Save");
     lv_obj_center(lbl_save);
 
     lv_obj_t *btn_reset = lv_btn_create(t_settings);
-    lv_obj_set_size(btn_reset, 95, 30);
-    lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 55, -15);
+    lv_obj_set_size(btn_reset, 115, 50);
+    lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 55, -45);
     lv_obj_t *lbl_reset = lv_label_create(btn_reset);
     lv_label_set_text(lbl_reset, "Reset");
     lv_obj_center(lbl_reset);
+
+
+    lv_obj_t *refe = lv_label_create(t_settings);
+    lv_label_set_text(refe, "Data source: Trafiklab API");
+    lv_obj_align(refe, LV_ALIGN_BOTTOM_MID, 0, -10);
   }
 }
 
