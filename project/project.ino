@@ -11,6 +11,7 @@
 #include "secrets.h"
 #include "WiFi.hpp"
 #include "HTTP.hpp"
+#include "TouchInput.hpp"
 
 
 
@@ -41,6 +42,10 @@ static lv_obj_t* t_settings;
 static lv_obj_t *dep_list_container = NULL;
 static lv_obj_t *dropdown_stops = NULL;
 static lv_obj_t *dropdown_transport = NULL;
+
+static lv_obj_t *btn_set = NULL;
+static lv_obj_t *btn_save = NULL;
+static lv_obj_t *btn_reset = NULL;
 
 
 LilyGo_Class amoled;
@@ -113,7 +118,7 @@ static void create_ui()
 
 // Hjälpfunktion för att lägga till Settings-knappen på skärm
 static void add_settings_button(lv_obj_t *parent) {
-    lv_obj_t *btn_set = lv_btn_create(parent);
+    btn_set = lv_btn_create(parent);
     lv_obj_set_size(btn_set, 90, 50);
     lv_obj_align(btn_set, LV_ALIGN_TOP_RIGHT, -10, 10);
     lv_obj_t *lbl_s = lv_label_create(btn_set);
@@ -198,14 +203,14 @@ static void create_ui()
     lv_obj_align(dropdown_transport, LV_ALIGN_CENTER, 0, 0);
 
     // Spara- och återställningsknappar
-    lv_obj_t *btn_save = lv_btn_create(t_settings);
+    btn_save = lv_btn_create(t_settings);
     lv_obj_set_size(btn_save, 115, 50);
     lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -55, -45);
     lv_obj_t *lbl_save = lv_label_create(btn_save);
     lv_label_set_text(lbl_save, "Save");
     lv_obj_center(lbl_save);
 
-    lv_obj_t *btn_reset = lv_btn_create(t_settings);
+    btn_reset = lv_btn_create(t_settings);
     lv_obj_set_size(btn_reset, 115, 50);
     lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 55, -45);
     lv_obj_t *lbl_reset = lv_label_create(btn_reset);
@@ -283,6 +288,15 @@ void setup()
   beginLvglHelper(amoled);   // init LVGL for this board
 
   create_ui();
+
+touch_input_init(
+    btn_set,
+    btn_save,
+    btn_reset,
+    dropdown_stops,
+    dropdown_transport
+);
+
   int8_t WiFi_code = connect_wifi(); // for future error handling 
 }
 
