@@ -2,12 +2,12 @@
 #include "secrets.h"
 
 
-bool request_send(String stop_id)
+int8_t request_send(String stop_id)
 {
     if (WiFi.status()!= WL_CONNECTED)
     {
         Serial.println("No WiFi connection - unable to send request");
-        return false;
+        return 6;
     }
 
     HTTPClient http; 
@@ -19,12 +19,12 @@ bool request_send(String stop_id)
     if (begin_result == false) 
     {
         Serial.println ("Request not sent - bad url");
-        return false;
+        return 6;
     }
 
     int http_code = http.GET();
 
-    int short_code = http_code/100;
+    int8_t short_code = http_code/100;
 
     switch (short_code)//Error handling and debug info
     {
@@ -47,20 +47,20 @@ bool request_send(String stop_id)
         Serial.println("Code 4xx: Client error (strong FALSE - break)");
         Serial.print(http_code);
         http.end();
-        return false;
+        return short_code;
 
         case (5):
         Serial.println("Code 5xx: Server error (strong FALSE - break)");
         Serial.print (http_code);
         http.end();
-        return false;
+        return short_code;
 
         default:
         Serial.println("Unexpected HTTP code (strong FALSE - break)");
         Serial.print(http_code);
         Serial.print(HTTPClient::errorToString(http_code));
         http.end();
-        return false;
+        return 6;
     }
 
     String* response = new String(http.getString()); //THIS IS A BAD WAY TO HANDLE JSON FILES! FOR PRACTICE ONLY!
@@ -79,7 +79,7 @@ bool request_send(String stop_id)
     response = nullptr;
 
     http.end(); //closing the HTTP connection
-    return true;
+    return short_code;
 }
 
 
@@ -115,4 +115,51 @@ bool stop_lookup (String user_input) //The API allows to lookup (!!) stops. With
     //END OF TEMPORARY BLOCK!!!
     
     
+}
+
+int8_t refresh_departures(String stop_id)
+{
+    int8_t refresh_status = request_send(stop_id);
+    if (refresh_status >= 3)
+    {
+      wl_status_t wifi_status = WiFi.status();
+      if (wifi_status != WL_CONNECTED)
+      {
+        bool troubleshoot_status = troubleshoot_network();
+        if (troubleshoot_status ==false)
+        {
+          Serial.println("Fatal WiFi error");
+        }
+        else
+        {
+          // Wi-Fi recovered - retry request
+           refresh_status = request_send(stop_id);
+           
+          // No further recovery attempts are made if the retry fails
+        }
+      }
+      else
+      {
+        switch (refresh_status)
+        {
+          case 3:
+          Serial.println("HTTP redirect");
+          break;
+
+          case 4:
+          Serial.println("HTTP client error");
+          break;
+
+          case 5:
+          Serial.println("API/server error");
+          break;
+          
+          case 6:
+          // transport/network handling
+          break;
+        }
+      }
+    }
+
+    return refresh_status;
 }

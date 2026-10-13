@@ -490,14 +490,14 @@ void setup()
   int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
   
   //Testing requests
-  bool request_result = false;
+  int8_t request_result = 6;
   if (WiFi_code==1)
   {
     request_result = request_send("740032188");
   }
-  if (request_result == false)
+  if (request_result >= 4)
   {
-    Serial.println ("Network not avaliable");
+    Serial.println ("Request failed");
     //Possible event here
   }
 }
@@ -510,12 +510,15 @@ void loop()
 
   //US4.1: As a user, I want the live departure data to update automatically in 60 seconds
 
-  static long lastRefresh = 0;
+  static uint32_t lastRefresh = 0;
 
 if (millis() - lastRefresh >= 60000) {
-    request_send(current_stop.id);
+
+    int8_t request_status = refresh_departures(current_stop.id);
+    
+    //If request_status >=3 - error, else OK
+    
     lastRefresh = millis();
-    //Error handling can be placed here
 }
 
 
