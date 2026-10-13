@@ -28,6 +28,7 @@ struct DepartureItem {
 // StopData: Lagrar hållplatsens namn och lista med avgångar (DepartureItem). count anger hur många avgångar som finns i listan.
 struct StopData {
     char stopName[64];
+    char transportType[32];
     DepartureItem departures[5];    // för tillfället max 5 avgångar, kan ändras senare
     int count;
 };
@@ -41,12 +42,16 @@ static lv_obj_t* t_settings;
 static lv_obj_t *dep_list_container = NULL;
 static lv_obj_t *dep_table = NULL;
 static lv_obj_t *lbl_current_stop = NULL;
+static lv_obj_t *lbl_current_transport = NULL;
 static lv_obj_t *dropdown_stops = NULL;
 static lv_obj_t *dropdown_transport = NULL;
 
 // Statusikoner
 static lv_obj_t *lbl_wifi_status = NULL;
 static lv_obj_t *lbl_live_status = NULL;
+
+const char* DEFAULT_STOP = "Campus Gräsvik";
+const char* DEFAULT_TRANSPORT = "All Transport Types";
 
 LilyGo_Class amoled;
 
@@ -267,8 +272,8 @@ static void create_ui()
   {
     add_settings_button(t_departures);
 
-    // Demodata: kan ändras dynamiskt baserat på användarens val i inställningarna (dropdown_stops och dropdown_transport)
-    ui_load_demo_data("Campus Gräsvik", "All Transport Types");
+    // Standard Demodata: kan ändras dynamiskt baserat på användarens val i inställningarna (dropdown_stops och dropdown_transport)
+    ui_load_demo_data(DEFAULT_STOP, DEFAULT_TRANSPORT);
 
     lv_obj_t *title = lv_label_create(t_departures);
     lv_label_set_text(title, "Departures");
@@ -276,7 +281,11 @@ static void create_ui()
 
     // lbl_current_stop ska ändras dynamiskt baserat på användarens val i inställningarna (dropdown_stops)
     lbl_current_stop = lv_label_create(t_departures);
-    lv_label_set_text(lbl_current_stop, "Stop: Campus Gräsvik");
+    
+    char initStopLabel[128];
+    snprintf(initStopLabel, sizeof(initStopLabel), "Stop: %s [%s]", DEFAULT_STOP, DEFAULT_TRANSPORT);
+    lv_label_set_text(lbl_current_stop, initStopLabel);
+    
     lv_obj_align(lbl_current_stop, LV_ALIGN_TOP_MID, 0, 40);
 
     dep_list_container = lv_obj_create(t_departures);
@@ -366,13 +375,21 @@ static void create_ui()
 }
 
 
+
+// Funktion för att applicera nya användarinställningar (anropas t.ex. vid Save/Reset)
+void ui_apply_user_settings(const char* selectedStop, const char* selectedTransport) {
+    // Ladda om demodatan i tabellen (och uppdatera titeln) med de nya valen
+    ui_load_demo_data(selectedStop, selectedTransport);
+}
+
+
 // Funktion för att uppdatera tabellen med ny data från nätverks-/logikmodulen
 void ui_update_departure_table(const StopData *stopData) {
     if (!dep_table || !lbl_current_stop) return;
 
     // Uppdatera titeln med den aktiva hållplatsen (den användaren valt)
     char stopLabel[128];
-    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s", stopData->stopName);
+    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->stopName, stopData->transportType);
     lv_label_set_text(lbl_current_stop, stopLabel);
 
     // Fyll tabellens rader baserat på hur många avgångar som finns (stopData->count)
