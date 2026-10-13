@@ -25,10 +25,10 @@ struct DepartureItem {
 };
 
 
-// StopData: Lagrar hållplatsens namn och en lista med upp till 5 avgångar.
+// StopData: Lagrar hållplatsens namn och lista med avgångar (DepartureItem). count anger hur många avgångar som finns i listan.
 struct StopData {
     char stopName[64];
-    DepartureItem departures[5];
+    DepartureItem departures[5];    // för tillfället max 5 avgångar, kan ändras senare
     int count;
 };
 
@@ -39,9 +39,14 @@ static lv_obj_t* t_departures;
 static lv_obj_t* t_settings;
 
 static lv_obj_t *dep_list_container = NULL;
+static lv_obj_t *dep_table = NULL;
+static lv_obj_t *lbl_current_stop = NULL;
 static lv_obj_t *dropdown_stops = NULL;
 static lv_obj_t *dropdown_transport = NULL;
 
+// Statusikoner
+static lv_obj_t *lbl_wifi_status = NULL;
+static lv_obj_t *lbl_live_status = NULL;
 
 LilyGo_Class amoled;
 
@@ -110,6 +115,101 @@ static void create_ui()
 // 
 
 
+// Funktion som sätter unik demodata baserat på både hållplats och transporttyp
+void ui_load_demo_data(const char* stopName, const char* transportType) {
+    if (!dep_table || !lbl_current_stop) return;
+
+    char stopLabel[128];
+    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopName, transportType);
+    lv_label_set_text(lbl_current_stop, stopLabel);
+
+    // Nollställer tabellen först så att den är tom om inga avgångar matchar
+    for (int r = 1; r <= 4; r++) {
+        lv_table_set_cell_value(dep_table, r, 0, "--:--");
+        lv_table_set_cell_value(dep_table, r, 1, "-");
+        lv_table_set_cell_value(dep_table, r, 2, "No departures");
+    }
+
+    int currentRow = 1;
+
+    // --- CAMPUS GRÄSVIK ---
+    if (strcmp(stopName, "Campus Gräsvik") == 0) {
+        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:15"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "3"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Wämö");
+            currentRow++;
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:22"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "6"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Centralstationen");
+            currentRow++;
+        }
+        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Ferry") == 0) {
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:45"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "Färja"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Hasslö");
+            currentRow++;
+        }
+    }
+    // --- KARLSKRONA CENTRALSTATION ---
+    else if (strcmp(stopName, "Karlskrona Centralstation") == 0) {
+        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Train") == 0) {
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:10"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "Tåg"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Malmö C");
+            currentRow++;
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:50"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "Tåg"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Göteborg C");
+            currentRow++;
+        }
+        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:20"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "1"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Bergåsa");
+            currentRow++;
+        }
+    }
+    // --- KARLSKRONA CENTRUM ---
+    else if (strcmp(stopName, "Karlskrona centrum") == 0) {
+        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:12"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "5"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Hästö");
+            currentRow++;
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:25"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "3"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Verkö");
+            currentRow++;
+        }
+    }
+    // --- KUNGSPLAN ---
+    else if (strcmp(stopName, "Kungsplan") == 0) {
+        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:18"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "2"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "IKEA");
+            currentRow++;
+        }
+    }
+    // --- BERGÅSA STATION ---
+    else if (strcmp(stopName, "Bergåsa station") == 0) {
+        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Train") == 0) {
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:05"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "Tåg"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Karlskrona C");
+            currentRow++;
+        }
+        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+            lv_table_set_cell_value(dep_table, currentRow, 0, "12:20"); 
+            lv_table_set_cell_value(dep_table, currentRow, 1, "7"); 
+            lv_table_set_cell_value(dep_table, currentRow, 2, "Blekingesjukhuset");
+            currentRow++;
+        }
+    }
+}
+
+
 
 // Hjälpfunktion för att lägga till Settings-knappen på skärm
 static void add_settings_button(lv_obj_t *parent) {
@@ -167,47 +267,93 @@ static void create_ui()
   {
     add_settings_button(t_departures);
 
+    // Demodata: kan ändras dynamiskt baserat på användarens val i inställningarna (dropdown_stops och dropdown_transport)
+    ui_load_demo_data("Campus Gräsvik", "All Transport Types");
+
     lv_obj_t *title = lv_label_create(t_departures);
     lv_label_set_text(title, "Departures");
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
 
+    // lbl_current_stop ska ändras dynamiskt baserat på användarens val i inställningarna (dropdown_stops)
+    lbl_current_stop = lv_label_create(t_departures);
+    lv_label_set_text(lbl_current_stop, "Stop: Campus Gräsvik");
+    lv_obj_align(lbl_current_stop, LV_ALIGN_TOP_MID, 0, 40);
+
     dep_list_container = lv_obj_create(t_departures);
-    lv_obj_set_size(dep_list_container, 400, 320);
+    lv_obj_set_size(dep_list_container, 400, 300);
     lv_obj_align(dep_list_container, LV_ALIGN_CENTER, 0, 15);
     lv_obj_set_flex_flow(dep_list_container, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_scrollbar_mode(dep_list_container, LV_SCROLLBAR_MODE_AUTO); // Activates scrolling when necessary
+
+    // Refresh button in the container
+    lv_obj_t *btn_refresh = lv_btn_create(dep_list_container);
+    lv_obj_set_size(btn_refresh, 40, 40);
+    lv_obj_align(btn_refresh, LV_ALIGN_TOP_RIGHT, -5, -45);
+
+    lv_obj_t *lbl_ref_icon = lv_label_create(btn_refresh);
+    lv_label_set_text(lbl_ref_icon, LV_SYMBOL_REFRESH);
+    lv_obj_center(lbl_ref_icon);
+
+
+    // Table in the container
+    dep_table = lv_table_create(dep_list_container);
+    lv_obj_set_size(dep_table, 380, 280);
+
+    lv_table_set_row_cnt(dep_table, 6); // 1 header row + 5 departure rows
+    lv_table_set_col_cnt(dep_table, 3);
+    lv_table_set_col_width(dep_table, 0, 80);   // Time
+    lv_table_set_col_width(dep_table, 1, 80);   // Line
+    lv_table_set_col_width(dep_table, 2, 220);  // Destination
+
+    // Tabellrubriker
+    lv_table_set_cell_value(dep_table, 0, 0, "Time");
+    lv_table_set_cell_value(dep_table, 0, 1, "Line");
+    lv_table_set_cell_value(dep_table, 0, 2, "Destination");
+
+
   }
 
   
   // --- 3. SETTINGS SCREEN (Tile 2) ---
   {
-
     lv_obj_t *title = lv_label_create(t_settings);
     lv_label_set_text(title, "Settings");
-    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
+    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
+
+    lbl_wifi_status = lv_label_create(t_settings);
+    lv_label_set_text(lbl_wifi_status, "Wi-Fi: Connecting...");
+    lv_obj_set_style_text_font(lbl_wifi_status, &lv_font_montserrat_14, 0);
+    lv_obj_align(lbl_wifi_status, LV_ALIGN_TOP_MID, 0, 35);
+
+    // Använd ui_update_live_status_display() för att uppdatera denna label med live status från nätverksmodulen
+    lbl_live_status = lv_label_create(t_settings);
+    lv_label_set_text(lbl_live_status, "Live Data: Active (Trafiklab)");
+    lv_obj_set_style_text_font(lbl_live_status, &lv_font_montserrat_14, 0);
+    lv_obj_align(lbl_live_status, LV_ALIGN_TOP_MID, 0, 55);
 
     // Dropdown för hållplatser
     dropdown_stops = lv_dropdown_create(t_settings);
-    lv_dropdown_set_options(dropdown_stops, "Campus Grasvik\nKarlskrona Centralstation\nBergasa Station\nHultvagen\nLango");
+    lv_dropdown_set_options(dropdown_stops, "Campus Gräsvik\nKarlskrona Centralstation\nKarlskrona centrum\nKungsplan\nBergåsa station");
     lv_obj_set_size(dropdown_stops, 230, 55);
-    lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -65);
+    lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -35);
 
     // Dropdown för transporttyper
     dropdown_transport = lv_dropdown_create(t_settings);
     lv_dropdown_set_options(dropdown_transport, "All Transport Types\nBus\nTrain\nFerry");
     lv_obj_set_size(dropdown_transport, 230, 55);
-    lv_obj_align(dropdown_transport, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_align(dropdown_transport, LV_ALIGN_CENTER, 0, 25);
 
     // Spara- och återställningsknappar
     lv_obj_t *btn_save = lv_btn_create(t_settings);
     lv_obj_set_size(btn_save, 115, 50);
-    lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -55, -45);
+    lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -55, -35);
     lv_obj_t *lbl_save = lv_label_create(btn_save);
     lv_label_set_text(lbl_save, "Save");
     lv_obj_center(lbl_save);
 
     lv_obj_t *btn_reset = lv_btn_create(t_settings);
     lv_obj_set_size(btn_reset, 115, 50);
-    lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 55, -45);
+    lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 55, -35);
     lv_obj_t *lbl_reset = lv_label_create(btn_reset);
     lv_label_set_text(lbl_reset, "Reset");
     lv_obj_center(lbl_reset);
@@ -218,6 +364,40 @@ static void create_ui()
     lv_obj_align(refe, LV_ALIGN_BOTTOM_MID, 0, -10);
   }
 }
+
+
+// Funktion för att uppdatera tabellen med ny data från nätverks-/logikmodulen
+void ui_update_departure_table(const StopData *stopData) {
+    if (!dep_table || !lbl_current_stop) return;
+
+    // Uppdatera titeln med den aktiva hållplatsen (den användaren valt)
+    char stopLabel[128];
+    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s", stopData->stopName);
+    lv_label_set_text(lbl_current_stop, stopLabel);
+
+    // Fyll tabellens rader baserat på hur många avgångar som finns (stopData->count)
+    for (int i = 0; i < stopData->count; i++) {
+        int rowIndex = i + 1;
+        lv_table_set_cell_value(dep_table, rowIndex, 0, stopData->departures[i].time);
+        lv_table_set_cell_value(dep_table, rowIndex, 1, stopData->departures[i].line);
+        lv_table_set_cell_value(dep_table, rowIndex, 2, stopData->departures[i].destination);
+    }
+}
+
+// Funktion för att uppdatera Wi-Fi status på skärmen
+void ui_update_wifi_status_display(const char* statusText) {
+    if (lbl_wifi_status) {
+        lv_label_set_text(lbl_wifi_status, statusText);
+    }
+}
+
+// Funktion för att uppdatera live status på skärmen
+void ui_update_live_status_display(const char* statusText) {
+    if (lbl_live_status) {
+        lv_label_set_text(lbl_live_status, statusText);
+    }
+}
+
 
 
 
@@ -244,25 +424,32 @@ static int8_t connect_wifi()
     Serial.println("WiFi connected succesfully.");
     ipv4 = WiFi.localIP();
     Serial.println(ipv4);
+    ui_update_wifi_status_display("Wi-Fi: Connected (Online)");
     return 1;
     case (WL_IDLE_STATUS): 
     Serial.println ("Pending WiFi status (timeout WL_IDLE_STATUS).");
+    ui_update_wifi_status_display("Wi-Fi: Idle / Connecting");
     return -1;
     case (WL_CONNECT_FAILED):
     Serial.println ("WiFi connection failed (WL_CONNECT_FAILED).");
+    ui_update_wifi_status_display("Wi-Fi: Connection Failed");
     return -1;
     case (WL_NO_SSID_AVAIL):
     Serial.println ("WiFi network not found (WL_NO_SSID_AVAIL)");
+    ui_update_wifi_status_display("Wi-Fi: Network Not Found");
     return -1;
     case (WL_DISCONNECTED):
     Serial.println ("WiFi not active (WL_DISCONNECTED)");
+    ui_update_wifi_status_display("Wi-Fi: Disconnected");
     return -1;
     case (WL_CONNECTION_LOST):
     Serial.println ("WiFi connected, but connection lost (WL_CONNECTION_LOST)");
+    ui_update_wifi_status_display("Wi-Fi: Connection Lost");
     return -1;
     default:
     Serial.println ("Unexpectrd WiFi error:");
     Serial.println (wifi_status);
+    ui_update_wifi_status_display("Wi-Fi: Unexpected Error");
     return 0;
 
   }
