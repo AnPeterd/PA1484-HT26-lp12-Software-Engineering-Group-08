@@ -160,4 +160,6 @@ int8_t refresh_departures(String stop_id)
         }
       }
     }
+
+    return refresh_status;
 }

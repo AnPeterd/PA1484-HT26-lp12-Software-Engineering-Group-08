@@ -496,6 +496,10 @@ void loop()
   static uint32_t lastRefresh = 0;
 
 if (millis() - lastRefresh >= 60000) {
+
+    int8_t request_status = refresh_departures(current_stop.id);
+    
+    //If request_status >=3 - error, else OK
     
     lastRefresh = millis();
 }
