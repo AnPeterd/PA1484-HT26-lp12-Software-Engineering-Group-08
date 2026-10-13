@@ -20,12 +20,12 @@ void wifi_shutdown()
    WiFi.mode(WIFI_OFF); //for now this is enough
 }
 
-void troubleshoon_network(int8_t code) //auto-troubleshhoting function for WiFi
+bool troubleshoot_network() //auto-troubleshhoting function for WiFi
 {
     if (WiFi.status() == WL_CONNECTED)
     {
         Serial.println("No longer in need of torubleshooting");
-        return;
+        return true;
     }
     else
     {
@@ -42,18 +42,24 @@ void troubleshoon_network(int8_t code) //auto-troubleshhoting function for WiFi
                     }
                     if (WiFi.status() == WL_IDLE_STATUS && i>2)
                     {
-                        wifi_reboot(); //rebooting of waiting did not work
+                        wifi_reboot(); //rebooting if waiting did not work
                     }
                     break;
                 }
 
                     //some other statuses are going to be here
                 default:
-                wifi_reboot();// for rare conditions - the only seafe option is rebooting
+                wifi_reboot();// for rare or unclear conditions - the only seafe option is rebooting
             }
 
             current_status = WiFi.status();
         }
+
+        if (WiFi.status() == WL_CONNECTED)
+        {
+            return true;
+        }
+        return false;
 
     }
 
