@@ -1,32 +1,42 @@
 #pragma once
-#include <string>
+#include <Arduino.h>
 
-class Bus{
+class Departure {
+private:
+    String line;
+    String time;
+    String destination;
+    String status;
+    String transportMode;
+    bool canceled;
 
-    private: 
-        std::string busLine;
-        std::string time;
-        std::string destination;
-        std::string delays;
+public:
+    Departure(
+        const String& lineValue = "",
+        const String& timeValue = "",
+        const String& destinationValue = "",
+        const String& statusValue = "",
+        const String& transportModeValue = "",
+        bool canceledValue = false
+    ): line{lineValue}, time{timeValue}, destination{destinationValue}, status{statusValue}, transportMode{transportModeValue}, canceled{canceledValue}
+    {}
 
-    public:
-
-    Bus(std::string bL="", std::string time="", std::string des="", std::string del="") : 
-    busLine{bL}, time{time}, destination{des}, delays{del} {}
-
+    const String& getLine() { return line; }
+    const String& getTime() { return time; }
+    const String& getDestination() { return destination; }
+    const String& getStatus() { return status; }
+    const String& getTransportMode() { return transportMode; }
+    bool isCanceled() { return canceled; }
 };
 
+class StopData{
 
-class BusStop{
-
-    private:
-        std::string name;
-        Bus allOngoingBuses[5] = {};
-        int count;
+    private: 
+        String name;
+        Departure departures[5] = {};
+        int count = 0;
 
     public: 
-
-        BusStop(std::string name) : name{name} 
-        {count=0;}
+        StopData(const String& stopName) : name{stopName} {}
 
 };
