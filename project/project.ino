@@ -15,9 +15,7 @@
 #include "departures.hpp"
 
 
-
-// Data structures to hold departure information
-// DepartureItem: Lagrar info om en enskild avgång (tid, linje, destination, status).
+//Temporary objects for UI
 struct DepartureItem {
     char time[16];
     char line[16];
@@ -25,15 +23,12 @@ struct DepartureItem {
     char status[32];
 };
 
-
-// StopData: Lagrar hållplatsens namn och lista med avgångar (DepartureItem). count anger hur många avgångar som finns i listan.
-struct StopData {
+struct UiStopData {
     char stopName[64];
     char transportType[32];
-    DepartureItem departures[5];    // för tillfället max 5 avgångar, kan ändras senare
+    DepartureItem departures[5];
     int count;
 };
-
 
 static lv_obj_t* tileview;
 static lv_obj_t* t_start;
@@ -385,7 +380,7 @@ void ui_apply_user_settings(const char* selectedStop, const char* selectedTransp
 
 
 // Funktion för att uppdatera tabellen med ny data från nätverks-/logikmodulen
-void ui_update_departure_table(const StopData *stopData) {
+void ui_update_departure_table(const UiStopData *stopData) {
     if (!dep_table || !lbl_current_stop) return;
 
     // Uppdatera titeln med den aktiva hållplatsen (den användaren valt)
