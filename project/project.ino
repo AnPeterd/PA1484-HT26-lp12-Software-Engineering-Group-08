@@ -16,21 +16,6 @@
 #include "departures.hpp"
 
 
-// //Temporary objects for UI
-// struct DepartureItem {
-//     char time[16];
-//     char line[16];
-//     char destination[64];
-//     char status[32];
-// };
-
-// struct UiStopData {
-//     char stopName[64];
-//     char transportType[32];
-//     DepartureItem departures[5];
-//     int count;
-// };
-
 static lv_obj_t* tileview;
 static lv_obj_t* t_start;
 static lv_obj_t* t_departures;
@@ -65,69 +50,6 @@ std::string saved_transport_type = DEFAULT_TRANSPORT;
 
 LilyGo_Class amoled;
 
-
-// Lärarens kod
-/*
-static lv_obj_t* tileview;
-static lv_obj_t* t1;
-static lv_obj_t* t2;
-static lv_obj_t* t1_label;
-static lv_obj_t* t2_label;
-static bool t2_dark = false;  // start tile #2 in light mode
-
-// Function: Tile #2 Color change
-static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
-{
-  // Background
-  lv_obj_set_style_bg_opa(tile, LV_OPA_COVER, 0);
-  lv_obj_set_style_bg_color(tile, dark ? lv_color_black() : lv_color_white(), 0);
-
-  // Text
-  lv_obj_set_style_text_color(label, dark ? lv_color_white() : lv_color_black(), 0);
-}
-
-static void on_tile2_clicked(lv_event_t* e)
-{
-  LV_UNUSED(e);
-  t2_dark = !t2_dark;
-  apply_tile_colors(t2, t2_label, t2_dark);
-}
-
-// Function: Creates UI
-static void create_ui()
-{
-  // Fullscreen Tileview
-  tileview = lv_tileview_create(lv_scr_act());
-  lv_obj_set_size(tileview, lv_disp_get_hor_res(NULL), lv_disp_get_ver_res(NULL));
-  lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
-
-  // Add two horizontal tiles
-  t1 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
-  t2 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
-*/
-  // // Tile #1, Screen1
-  // {
-  //   t1_label = lv_label_create(t1);
-  //   lv_label_set_text(t1_label, "Hello Students");
-  //   lv_obj_set_style_text_font(t1_label, &lv_font_montserrat_28, 0);
-  //   lv_obj_center(t1_label);
-//     apply_tile_colors(t1, t1_label, /*dark=*/false);
-//   }
-
-
-//   // Tile #2, Screen2
-//   {
-//     t2_label = lv_label_create(t2);
-//     lv_label_set_text(t2_label, "Welcome to the workshop");
-//     lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
-//     lv_obj_center(t2_label);
-
-//     apply_tile_colors(t2, t2_label, /*dark=*/false);
-//     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
-//     lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
-//   }
-// }
-// 
 
 
 // Funktion som sätter unik demodata baserat på både hållplats och transporttyp
@@ -222,9 +144,10 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
             currentRow++;
         }
     }
-}
+} // ^FÖR DEMODATA EJ LIVE DATA^
 
-//deklarera de funktioner som inte är deklararet
+
+//deklarerat vissa funktioner.
 
 void ui_apply_user_settings(const char* selectedStop, const char* selectedTransport);
 void ui_update_departure_table(const StopData *stopData);
@@ -254,8 +177,7 @@ static void add_settings_button(lv_obj_t *parent) {
     lv_obj_center(lbl_s);
 }
 
-static void create_departure_table(lv_obj_t* parent)
-{
+static void create_departure_table(lv_obj_t* parent) {
     // Container för avgångstabellen
     dep_list_container = lv_obj_create(parent);
 
@@ -273,16 +195,16 @@ static void create_departure_table(lv_obj_t* parent)
 
     lv_table_set_row_cnt(dep_table, 6); // 1 header row + 5 departure rows
     // Kolumnbredder
-    lv_table_set_col_width(dep_table, 0, 80);   // Time
+    lv_table_set_col_width(dep_table, 0, 110);   // Time
     lv_table_set_col_width(dep_table, 1, 80);   // Line
-    lv_table_set_col_width(dep_table, 2, 220);  // Destination
+    lv_table_set_col_width(dep_table, 2, 190);  // Destination
 
     // Rubriker
     lv_table_set_cell_value(dep_table, 0, 0, "Time");
     lv_table_set_cell_value(dep_table, 0, 1, "Line");
     lv_table_set_cell_value(dep_table, 0, 2, "Destination");
 
-} // ^FÖR DEMODATA EJ LIVE DATA^
+}
 
 
 
