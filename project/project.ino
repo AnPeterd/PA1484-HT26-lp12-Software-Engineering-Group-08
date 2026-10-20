@@ -7,6 +7,7 @@
 #include <LilyGo_AMOLED.h>
 #include <LV_Helper.h>
 #include <lvgl.h>
+#include <string>
 
 #include "secrets.h"
 #include "WiFi.hpp"
@@ -39,8 +40,10 @@ static lv_obj_t *dep_list_container = NULL;
 static lv_obj_t *dep_table = NULL;
 
 static lv_obj_t *lbl_stopLabel = NULL;
-static lv_obj_t *lbl_current_stop = NULL;
-static lv_obj_t *lbl_current_transport = NULL;
+
+// static lv_obj_t *lbl_current_stop = NULL;        //unnecessary, replaced by lbl_stopLabel
+// static lv_obj_t *lbl_current_transport = NULL;
+
 static lv_obj_t *dropdown_stops = NULL;
 static lv_obj_t *dropdown_transport = NULL;
 
@@ -51,8 +54,13 @@ static lv_obj_t *lbl_live_status = NULL;
 const char* DEFAULT_STOP = "Campus Gräsvik";
 const char* DEFAULT_TRANSPORT = "All Transport Types";
 
-const char* current_stop_name = DEFAULT_STOP;
-const char* current_transport_type = DEFAULT_TRANSPORT;
+std::string current_stop_name = DEFAULT_STOP;
+std::string current_transport_type = DEFAULT_TRANSPORT;
+
+
+// Saved user settings
+std::string saved_stop_name = DEFAULT_STOP;
+std::string saved_transport_type = DEFAULT_TRANSPORT;
 
 
 LilyGo_Class amoled;
@@ -124,11 +132,11 @@ static void create_ui()
 
 // Funktion som sätter unik demodata baserat på både hållplats och transporttyp
 void ui_load_demo_data(const char* stopName, const char* transportType) {
-    if (!dep_table || !lbl_current_stop) return;
+    if (!dep_table || current_stop_name.empty()) return;
 
     char stopLabel[128];
     snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopName, transportType);
-    lv_label_set_text(lbl_current_stop, stopLabel);
+    lv_label_set_text(lbl_stopLabel, stopLabel);
 
     // Nollställer tabellen först så att den är tom om inga avgångar matchar
     for (int r = 1; r <= 4; r++) {
@@ -216,6 +224,14 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
     }
 }
 
+//deklarera de funktioner som inte är deklararet
+
+void ui_apply_user_settings(const char* selectedStop, const char* selectedTransport);
+void ui_update_departure_table(const StopData *stopData);
+void ui_update_wifi_status_display(const char* statusText);
+void ui_update_live_status_display(const char* statusText);
+
+
 
 static lv_obj_t *add_refresh_button(lv_obj_t *parent) {
     lv_obj_t *btn_refresh = lv_btn_create(parent);
@@ -265,7 +281,10 @@ static void create_departure_table(lv_obj_t* parent)
     lv_table_set_cell_value(dep_table, 0, 0, "Time");
     lv_table_set_cell_value(dep_table, 0, 1, "Line");
     lv_table_set_cell_value(dep_table, 0, 2, "Destination");
-}
+
+} // ^FÖR DEMODATA EJ LIVE DATA^
+
+
 
 
 static lv_obj_t *add_stop_label(lv_obj_t *parent, const char* stopName, const char* transportType) {
@@ -277,6 +296,48 @@ static lv_obj_t *add_stop_label(lv_obj_t *parent, const char* stopName, const ch
     
     return lbl_stopLabel;
 }
+
+void ui_update_stop_label(const char* stopName, const char* transportType)
+{
+    if (lbl_stopLabel == nullptr || stopName == nullptr || transportType == nullptr) { return; }
+
+    char text[128];
+
+    snprintf(text, sizeof(text), "Stop: %s [%s]", stopName, transportType);
+
+    lv_label_set_text(lbl_stopLabel, text);
+}
+
+
+void ui_set_current_stop(const char* stopName)
+{
+    if (stopName == nullptr) { return; }
+
+    current_stop_name = stopName;
+
+    ui_update_stop_label( current_stop_name.c_str(), current_transport_type.c_str() );
+
+    // TODO: Uppdatering av avgångstabellen. Här behövs StopData-objektet som innehåller avgångarna för den valda hållplatsen.
+    // för att: update_departure_table(stopData);
+
+
+}
+
+
+void ui_set_current_transport(const char* transportType)
+{
+    if (transportType == nullptr) {
+        return;
+    }
+
+    current_transport_type = transportType;
+
+    ui_update_stop_label(current_stop_name.c_str(), current_transport_type.c_str());
+
+    // TODO: Uppdatering av avgångstabellen. Här behövs StopData-objektet som innehåller avgångarna för den valda hållplatsen (current_stop_name).
+    // för att: update_departure_table(stopData);
+}
+
 
 
 // Funktion: Skapar UI med inbyggd swiping via Tileview
@@ -328,15 +389,13 @@ static void create_ui()
     lv_label_set_text(title, "Departures");
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
 
-    // lbl_current_stop ska ändras dynamiskt baserat på användarens val i inställningarna (dropdown_stops)
-    lbl_stopLabel = lv_label_create(t_departures);
+    // lbl_stopLabel ska ändras dynamiskt baserat på användarens val i inställningarna (dropdown_stops)
     lbl_stopLabel = add_stop_label(t_departures, DEFAULT_STOP, DEFAULT_TRANSPORT);
     lv_obj_align(lbl_stopLabel, LV_ALIGN_TOP_MID, 0, 40);
 
     create_departure_table(t_departures);
 
-    // Ladda data i tabellen härifrån:
-
+    // Ladda data (avgångar) i tabellen härifrån:
 
   }
 
@@ -394,48 +453,55 @@ static void create_ui()
 
 
 
-// Funktion för att applicera nya användarinställningar (anropas t.ex. vid Save/Reset)
+// För DEMO tabellen (ej live data): funktion för att applicera nya användarinställningar (anropas t.ex. vid Save/Reset) 
 void ui_apply_user_settings(const char* selectedStop, const char* selectedTransport) {
     // Ladda om demodatan i tabellen (och uppdatera titeln) med de nya valen
     ui_load_demo_data(selectedStop, selectedTransport);
 }
 
 
-// Funktion för att uppdatera tabellen med ny data från nätverks-/logikmodulen
+// Funktion för att uppdatera tabellen med ny live data från nätverks-/logikmodulen
 void ui_update_departure_table(const StopData *stopData) {
-    if (!stopData || !dep_table || !lbl_current_stop) return;
-
-    const char* transportType = DEFAULT_TRANSPORT;
-
-    if (lbl_current_transport != nullptr) { transportType = lv_label_get_text(lbl_current_transport); }
-
+    if (!stopData || !dep_table && current_stop_name.c_str()) { // kontrollera att current_stop_name inte är tom.
+        ui_update_live_status_display("No Departures");
+        return;   
+    }  
 
     // Uppdatera titeln med den aktiva hållplatsen (den användaren valt)
     char stopLabel[128];
-    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), transportType);
-    lv_label_set_text(lbl_current_stop, stopLabel);
+    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), current_transport_type);
+    lv_label_set_text(lbl_stopLabel, stopLabel);
 
+    ui_update_live_status_display("Active"); // Uppdatera live status
 
     for (int i = 0; i < stopData->getCount() && i < 5; i++) {
         const Departure* departure = stopData->getDeparture(i);
+        int rowIndex = i + 1;
 
-        if (departure != nullptr) {
-            int rowIndex = i + 1;
+        bool matches = strcmp(departure->getTransportMode().c_str(), current_transport_type.c_str()) == 0 || strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0;
 
-            lv_table_set_cell_value( dep_table, rowIndex, 0, departure->getTime().c_str() );
+        if(!matches) {
+            // Om transporttypen inte matchar, hoppa över denna avgång
+            continue;
+        }  
+        
+        if (departure != nullptr && matches) 
+        {
+            std::string timeStatus = std::string(departure->getTime().c_str()) + " - " + (departure->getStatus().c_str());
+
+            lv_table_set_cell_value( dep_table, rowIndex, 0, timeStatus.c_str() );
 
             lv_table_set_cell_value( dep_table, rowIndex, 1, departure->getLine().c_str() );
 
             lv_table_set_cell_value( dep_table, rowIndex, 2, departure->getDestination().c_str() );
         }
+
         else {
-            int rowIndex = i + 1;
             lv_table_set_cell_value(dep_table, rowIndex, 0, "--:--");
             lv_table_set_cell_value(dep_table, rowIndex, 1, "-");
             lv_table_set_cell_value(dep_table, rowIndex, 2, "No departures");
         }
     }
-
 }
 
 // Funktion för att uppdatera Wi-Fi status på skärmen
