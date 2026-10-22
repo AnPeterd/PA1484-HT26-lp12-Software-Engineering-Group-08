@@ -1,7 +1,12 @@
+#pragma once
 #include "departures.hpp"
 #include <ArduinoJson.h>
 #include <Arduino.h>
 
+bool parseDepartures(Stream& input, StopData& result);
+
+//Disabled to avoid multiple definitions
+/*
 bool parseFirstDeparture(Stream& input, Departure& result)
 {
     JsonDocument document;
@@ -46,3 +51,4 @@ bool parseFirstDeparture(Stream& input, Departure& result)
 
     return true;
 }
+    */

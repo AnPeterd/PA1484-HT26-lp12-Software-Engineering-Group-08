@@ -54,6 +54,9 @@ std::string current_transport_type = DEFAULT_TRANSPORT;
 std::string saved_stop_name = DEFAULT_STOP;
 std::string saved_transport_type = DEFAULT_TRANSPORT;
 
+// Stores the latest successfully parsed departures for Campus Gräsvik
+StopData campusDepartures{"Campus Gräsvik"};
+
 
 LilyGo_Class amoled;
 
@@ -398,7 +401,8 @@ void ui_update_departure_table(const StopData *stopData) {
 
     // Uppdatera titeln med den aktiva hållplatsen (den användaren valt)
     char stopLabel[128];
-    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), current_transport_type);
+    // Use c_str() because %s expects a C string
+    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), current_transport_type.c_str());
     lv_label_set_text(lbl_stopLabel, stopLabel);
 
     ui_update_live_status_display("Active"); // Uppdatera live status
@@ -519,7 +523,7 @@ void setup()
   beginLvglHelper(amoled);   // init LVGL for this board
 
   create_ui();
-
+/* Enable when touch_input_init is implemented.
 touch_input_init(
     btn_set,
     btn_save,
@@ -528,19 +532,26 @@ touch_input_init(
     dropdown_stops,
     dropdown_transport
 );
+*/
 
   int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
   
   //Testing requests
   int8_t request_result = 6;
+
   if (WiFi_code==1)
   {
-    request_result = request_send("740032188");
+    request_result = request_send(STOPS[0].id, campusDepartures);
   }
-  if (request_result >= 4)
+
+  if (request_result ==2)
   {
-    Serial.println ("Request failed");
-    //Possible event here
+    ui_update_departure_table(&campusDepartures);
+  }
+
+  else
+  {
+    ui_update_live_status_display("Update failed");
   }
 }
 
@@ -556,9 +567,16 @@ void loop()
 
 if (millis() - lastRefresh >= 60000) {
 
-    int8_t request_status = refresh_departures(current_stop.id);
+    int8_t request_status = refresh_departures(current_stop.id, campusDepartures);
+
+    if (request_status == 2) {
+        ui_update_departure_table(&campusDepartures);
+    } 
     
-    //If request_status >=3 - error, else OK
+    else 
+    {
+        ui_update_live_status_display("Update failed");
+    }
     
     lastRefresh = millis();
 }
