@@ -11,8 +11,16 @@ static bool earlierDeparture(
     return first.getTime().compareTo(second.getTime()) < 0;
 }
 
-bool parseDepartures(Stream& input, StopData& result)
+bool parseDepartures(Stream& input, StopData& result, const String& selectedTransport)
 {
+
+    String filter = selectedTransport;
+    filter.trim();
+    filter.toUpperCase();
+
+    if(filter != "ALL" && filter != "BUS" && filter != "TRAIN" && filter != "FERRY"){ return false; }
+
+
     JsonDocument document;
 
     DeserializationError error = deserializeJson(document, input);
@@ -41,8 +49,8 @@ bool parseDepartures(Stream& input, StopData& result)
 
         String line = route["designation"].as<const char*>();
         String destination = route["direction"].as<const char*>();
-        String transportMode =
-            route["transport_mode"].as<const char*>();
+        String transportMode = route["transport_mode"].as<const char*>();
+        if(filter != "ALL" && !transportMode.equalsIgnoreCase(filter)){ continue; }
 
         String time = departure["scheduled"].as<const char*>();
         bool canceled = departure["canceled"].as<bool>();
