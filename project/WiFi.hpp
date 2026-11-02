@@ -4,7 +4,7 @@
 #include <time.h>
 
 
-void troubleshoon_network(int8_t code);
+bool troubleshoot_network();
 
 void wifi_shutdown();
 
