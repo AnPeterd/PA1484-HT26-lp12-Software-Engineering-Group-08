@@ -33,14 +33,14 @@ public:
     bool isCanceled() const { return canceled; }
 };
 
-class StopData {
+class ParsedStopData {
 private:
     String name;
     Departure departures[5] = {};
     int count = 0;
 
 public:
-    StopData(const String& stopName) : name{stopName}{}
+    ParsedStopData(const String& stopName) : name{stopName}{}
 
     const String& getName() const { return name; }
 

@@ -11,7 +11,7 @@ static bool earlierDeparture(
     return first.getTime().compareTo(second.getTime()) < 0;
 }
 
-bool parseDepartures(Stream& input, StopData& result, const String& selectedTransport)
+bool parseDepartures(Stream& input, ParsedStopData& result, const String& selectedTransport)
 {
 
     String filter = selectedTransport;
@@ -98,7 +98,7 @@ bool parseDepartures(Stream& input, StopData& result, const String& selectedTran
 
     std::stable_sort( parsedDepartures.begin(), parsedDepartures.end(), earlierDeparture);
 
-    StopData updatedStop{result.getName()};
+    ParsedStopData updatedStop{result.getName()};
 
     for (const Departure& departure : parsedDepartures) {
         if (!updatedStop.addDeparture(departure)) { break;}
