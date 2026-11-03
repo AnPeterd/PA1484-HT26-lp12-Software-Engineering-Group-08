@@ -98,7 +98,7 @@ bool parseDepartures(Stream& input, ParsedStopData& result, const String& select
 
     std::stable_sort( parsedDepartures.begin(), parsedDepartures.end(), earlierDeparture);
 
-    ParsedStopData updatedStop{result.getName()};
+    ParsedStopData updatedStop{result.getName(), result.getStopId()};
 
     for (const Departure& departure : parsedDepartures) {
         if (!updatedStop.addDeparture(departure)) { break;}

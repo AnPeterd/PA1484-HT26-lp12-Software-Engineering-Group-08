@@ -36,13 +36,16 @@ public:
 class ParsedStopData {
 private:
     String name;
+    String stopId;
     Departure departures[5] = {};
     int count = 0;
 
 public:
-    ParsedStopData(const String& stopName) : name{stopName}{}
+    ParsedStopData(const String& stopName, const String& stopIdV) : name{stopName}, stopId{stopIdV} {}
 
     const String& getName() const { return name; }
+
+    const String& getStopId() const { return stopId; }
 
     int getCount() const { return count; }
 
