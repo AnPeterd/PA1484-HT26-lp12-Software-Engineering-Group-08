@@ -55,7 +55,9 @@ std::string saved_stop_name = DEFAULT_STOP;
 std::string saved_transport_type = DEFAULT_TRANSPORT;
 
 // Stores the latest successfully parsed departures for Campus Gräsvik
-StopData campusDepartures{"Campus Gräsvik"};
+StopData currentDepartures{STOPS[0].name, STOPS[0].id};
+
+uint32_t lastRefresh = 0;
 
 
 LilyGo_Class amoled;
@@ -509,6 +511,20 @@ static int8_t connect_wifi()
 }
 
 
+//Data uptading function connected to manual update button and automatic data
+void refreshNow()
+{
+    int8_t status = refresh_departures(currentStop.id, currentDepartures, String(current_transport_type.c_str()));
+
+    if (status == 2)
+        ui_update_departure_table(&currentDepartures);
+    else
+        ui_update_live_status_display("Update failed");
+
+    lastRefresh = millis();
+}
+
+
 // Must have function: Setup is run once on startup
 void setup()
 {
@@ -523,16 +539,14 @@ void setup()
   beginLvglHelper(amoled);   // init LVGL for this board
 
   create_ui();
-/* Enable when touch_input_init is implemented.
-touch_input_init(
+  touch_input_init(
     btn_set,
     btn_save,
     btn_reset,
     btn_refresh,
     dropdown_stops,
     dropdown_transport
-);
-*/
+  );
 
   int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
   
@@ -541,12 +555,12 @@ touch_input_init(
 
   if (WiFi_code==1)
   {
-    request_result = request_send(STOPS[0].id, campusDepartures);
+    request_result = request_send(STOPS[0].id, currentDepartures);
   }
 
   if (request_result ==2)
   {
-    ui_update_departure_table(&campusDepartures);
+    ui_update_departure_table(&currentDepartures);
   }
 
   else
@@ -558,30 +572,78 @@ touch_input_init(
 // Must have function: Loop runs continously on device after setup
 void loop()
 {
-  //when ready - current_stop variable should be here 
-  const Stop& current_stop = STOPS[0]; //Placeholder; When proper objects are ready - should be replaced
+lv_timer_handler();
 
-  //US4.1: As a user, I want the live departure data to update automatically in 60 seconds
-
-  static uint32_t lastRefresh = 0;
-
-if (millis() - lastRefresh >= 60000) {
-
-    int8_t request_status = refresh_departures(current_stop.id, campusDepartures);
-
-    if (request_status == 2) {
-        ui_update_departure_table(&campusDepartures);
-    } 
-    
-    else 
+    //Implementing TouchInput, revorking loop.
+    //NOT TESTED YET!
+    if (touch_input_has_event())
     {
-        ui_update_live_status_display("Update failed");
+
+        //Getting current input event
+        InputEvent event = touch_input_get_event();
+
+        switch (event)
+        {
+            case SETTINGS_BUTTON:
+                lv_obj_set_tile_id(tileview, 2, 0, LV_ANIM_ON); //Changing to the settings screen
+                break;
+
+            case REFRESH_BUTTON:
+                refreshNow();
+                break;
+
+            case STOP_DROPDOWN:
+            {
+                //Avaliable stops
+                uint16_t index = lv_dropdown_get_selected(dropdown_stops);
+
+                if (index < 5 && selectStop(index))
+                {
+                    //Changing current stop data
+                    ui_set_current_stop(currentStop.name);
+
+                    currentDepartures = StopData{currentStop.name, currentStop.id};
+
+                    ui_update_departure_table(&currentDepartures);
+
+                    //Sending a new request from the current stop
+                    refreshNow();
+                }
+                break;
+            }
+
+            case TRANSPORT_DROPDOWN:
+            {
+
+                //Avaliable transport types
+                uint16_t index = lv_dropdown_get_selected(dropdown_transport);
+
+                const char* labels[] = {
+                    "All Transport Types",
+                    "Bus",
+                    "Train",
+                    "Ferry"
+                };
+
+                if (index < 4)
+                {
+                    ui_set_current_transport(labels[index]);
+
+                    currentDepartures = StopData{currentStop.name,currentStop.id};
+
+                    ui_update_departure_table(&currentDepartures);
+                    refreshNow();
+                }
+                break;
+            }
+
+            default:
+                break;
+        }
     }
-    
-    lastRefresh = millis();
-}
 
+    if (millis() - lastRefresh >= 60000)
+        refreshNow();
 
-  lv_timer_handler();
-  delay(5);
+    delay(5);
 }

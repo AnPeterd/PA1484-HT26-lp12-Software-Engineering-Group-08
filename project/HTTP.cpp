@@ -3,7 +3,7 @@
 #include "departure_parser.hpp"
 
 
-int8_t request_send(String stop_id, StopData& result)
+int8_t request_send(String stop_id, StopData& result, const String& transport)
 {
     if (WiFi.status()!= WL_CONNECTED)
     {
@@ -48,7 +48,7 @@ int8_t request_send(String stop_id, StopData& result)
 
     }
 
-    bool parsed = parseDepartures(http.getStream(), result);
+    bool parsed = parseDepartures(http.getStream(), result, transport);
 
     http.end(); //closing the HTTP connection
 
@@ -63,9 +63,9 @@ int8_t request_send(String stop_id, StopData& result)
 
 
 
-int8_t refresh_departures(String stop_id, StopData& result)
+int8_t refresh_departures(String stop_id, StopData& result, const String& transport)
 {
-    int8_t refresh_status = request_send(stop_id, result);
+    int8_t refresh_status = request_send(stop_id, result, transport);
     if (refresh_status >= 3)
     {
       wl_status_t wifi_status = WiFi.status();
@@ -79,11 +79,13 @@ int8_t refresh_departures(String stop_id, StopData& result)
         else
         {
           // Wi-Fi recovered - retry request
-           refresh_status = request_send(stop_id, result);
+           refresh_status = request_send(stop_id, result, transport);
            
           // No further recovery attempts are made if the retry fails
         }
       }
+
+      //Rework of HTTP Errors is comming soon
       else
       {
         switch (refresh_status)
@@ -102,6 +104,10 @@ int8_t refresh_departures(String stop_id, StopData& result)
           
           case 6:
           // transport/network handling
+          break;
+
+          case 7:
+          // parsing problem
           break;
         }
       }

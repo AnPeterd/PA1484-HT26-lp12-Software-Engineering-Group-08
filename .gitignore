@@ -14,3 +14,5 @@ Butt*
 /project/secrets.h
 secrets.h
 *.env
+HTTP_redesign.cpp
+HTTP_redesign.hpp

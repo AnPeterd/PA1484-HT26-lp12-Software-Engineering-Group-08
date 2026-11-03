@@ -33,7 +33,7 @@ public:
     bool isCanceled() const { return canceled; }
 };
 
-class ParsedStopData {
+class StopData {
 private:
     String name;
     String stopId;
@@ -41,7 +41,7 @@ private:
     int count = 0;
 
 public:
-    ParsedStopData(const String& stopName, const String& stopIdV) : name{stopName}, stopId{stopIdV} {}
+    StopData(const String& stopName, const String& stopIdV) : name{stopName}, stopId{stopIdV} {}
 
     const String& getName() const { return name; }
 

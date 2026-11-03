@@ -11,14 +11,27 @@ static bool earlierDeparture(
     return first.getTime().compareTo(second.getTime()) < 0;
 }
 
-bool parseDepartures(Stream& input, ParsedStopData& result, const String& selectedTransport)
+bool parseDepartures(Stream& input, StopData& result, const String& selectedTransport)
 {
 
     String filter = selectedTransport;
     filter.trim();
     filter.toUpperCase();
 
-    if(filter != "ALL" && filter != "BUS" && filter != "TRAIN" && filter != "FERRY"){ return false; }
+    //Names used in TrafiklabAPI
+    if (filter == "ALL TRANSPORT TYPES")
+        filter = "ALL";
+
+    if (filter == "FERRY")
+        filter = "BOAT";
+
+    if (filter != "ALL" &&
+        filter != "BUS" &&
+        filter != "TRAIN" &&
+        filter != "BOAT")
+    {
+        return false;
+    }
 
 
     JsonDocument document;
@@ -98,7 +111,7 @@ bool parseDepartures(Stream& input, ParsedStopData& result, const String& select
 
     std::stable_sort( parsedDepartures.begin(), parsedDepartures.end(), earlierDeparture);
 
-    ParsedStopData updatedStop{result.getName(), result.getStopId()};
+    StopData updatedStop{result.getName(), result.getStopId()};
 
     for (const Departure& departure : parsedDepartures) {
         if (!updatedStop.addDeparture(departure)) { break;}
