@@ -14,6 +14,8 @@
 #include "HTTP.hpp"
 #include "TouchInput.hpp"
 
+#include "memory_saver.hpp"
+
 #include "departures.hpp"
 
 
@@ -500,7 +502,7 @@ static int8_t connect_wifi()
     ui_update_wifi_status_display("Wi-Fi: Connection Lost");
     return -1;
     default:
-    Serial.println ("Unexpectrd WiFi error:");
+    Serial.println ("Unexpected WiFi error:");
     Serial.println (wifi_status);
     ui_update_wifi_status_display("Wi-Fi: Unexpected Error");
     return 0;
@@ -508,12 +510,13 @@ static int8_t connect_wifi()
   }
 }
 
+MemorySaver memorySaver; // temporarily placed here
 
 // Must have function: Setup is run once on startup
 void setup()
 {
   Serial.begin(115200);
-  delay(200);
+  delay(1000);
 
   if (!amoled.begin()) {
     Serial.println("Failed to init LilyGO AMOLED.");
