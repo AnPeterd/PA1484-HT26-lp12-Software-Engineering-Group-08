@@ -11,7 +11,9 @@ class MemorySaver {
         
         String loadString(const char* key, const char* defaultValue = "");
         bool saveString(const char* key, const char* value);
-
+        bool saveString(const char* key, const String& value);
+        bool saveString(const char* key, const std::string& value);
+        
         void end();
     
     private:

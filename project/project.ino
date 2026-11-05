@@ -19,6 +19,8 @@
 #include "departures.hpp"
 
 
+MemorySaver saved_settings;
+
 static lv_obj_t* tileview;
 static lv_obj_t* t_start;
 static lv_obj_t* t_departures;
@@ -415,14 +417,15 @@ void ui_update_departure_table(const StopData *stopData) {
         const Departure* departure = stopData->getDeparture(i);
         int rowIndex = i + 1;
 
-        bool matches = strcmp(departure->getTransportMode().c_str(), current_transport_type.c_str()) == 0 || strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0;
+        // bool matches = strcmp(departure->getTransportMode().c_str(), current_transport_type.c_str()) == 0 || strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0;
 
-        if(!matches) {
-            // Om transporttypen inte matchar, hoppa över denna avgång
-            continue;
-        }  
+        // if(!matches) {
+        //     // Om transporttypen inte matchar, hoppa över denna avgång
+        //     continue;
+        // }  
         
-        if (departure != nullptr && matches) 
+        // if (departure != nullptr && matches) 
+        if (departure != nullptr) 
         {
             std::string timeStatus = std::string(departure->getTime().c_str()) + " - " + (departure->getStatus().c_str());
 
@@ -512,9 +515,8 @@ static int8_t connect_wifi()
   }
 }
 
-MemorySaver memorySaver; // temporarily placed here
 
-//Data uptading function connected to manual update button and automatic data
+//Data updating function connected to manual update button and automatic data
 void refreshNow()
 {
     int8_t status = refresh_departures(currentStop.id, currentDepartures, String(current_transport_type.c_str()));
@@ -527,50 +529,109 @@ void refreshNow()
     lastRefresh = millis();
 }
 
+void applySettings()
+{
+    currentDepartures = StopData{currentStop.name,currentStop.id};
+    ui_update_departure_table(&currentDepartures);
+    refreshNow();
+    
+    return;
+}
+
+void restoreSettings()
+{
+    selectStop(0);
+    ui_set_current_stop(currentStop.name);
+
+    //current_transport_type = DEFAULT_TRANSPORT;
+    ui_set_current_transport(DEFAULT_TRANSPORT);
+
+    applySettings();
+    
+    return;
+}
+
+void loadSettings()
+{
+    const char* labels[] = {
+        "All Transport Types",
+        "Bus",
+        "Train",
+        "Ferry"
+    };
+
+    uint32_t latestStop = saved_settings.loadUInt("latestStop", 0);
+    uint32_t latestTransport = saved_settings.loadUInt("latestTransport", 0);
+
+    selectStop(latestStop);
+    ui_set_current_stop(currentStop.name);
+    
+    if (latestTransport > 4 || latestTransport < -1) {
+        latestTransport = 0;
+    }
+    // current_transport_type = labels[latestTransport];
+    ui_set_current_transport(labels[latestTransport]);
+
+    applySettings();
+    
+    return;
+}
+
+void saveSettings()
+{
+    saved_settings.saveUInt("latestStop", lv_dropdown_get_selected(dropdown_stops));
+    saved_settings.saveUInt("latestTransport", lv_dropdown_get_selected(dropdown_transport));
+    
+    return;
+}
+
 
 // Must have function: Setup is run once on startup
 void setup()
 {
-  Serial.begin(115200);
-  delay(1000);
+    Serial.begin(115200);
+    delay(1000);
 
-  if (!amoled.begin()) {
-    Serial.println("Failed to init LilyGO AMOLED.");
-    while (true) delay(1000);
-  }
+    if (!saved_settings.begin()) {    // open map with settings
+        Serial.println("Failed to init Saved Settings");
+    }
+    
+    if (!amoled.begin()) {
+        Serial.println("Failed to init LilyGO AMOLED.");
+        while (true) delay(1000);
+    }
+        
+    beginLvglHelper(amoled);   // init LVGL for this board
+        
+    create_ui();
+    touch_input_init(
+        btn_set,
+        btn_save,
+        btn_reset,
+        btn_refresh,
+        dropdown_stops,
+        dropdown_transport
+    );
+        
+    
+    int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
+    
+    loadSettings();
+    
+    // Testing requests
+    // int8_t request_result = 6;
+    
+    if (WiFi_code==1)
+    {
+        refreshNow();
+        ui_update_departure_table(&currentDepartures);
+    }
 
-  beginLvglHelper(amoled);   // init LVGL for this board
-
-  create_ui();
-  touch_input_init(
-    btn_set,
-    btn_save,
-    btn_reset,
-    btn_refresh,
-    dropdown_stops,
-    dropdown_transport
-  );
-
-  int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
-  
-  //Testing requests
-  int8_t request_result = 6;
-
-  if (WiFi_code==1)
-  {
-    request_result = request_send(STOPS[0].id, currentDepartures);
-  }
-
-  if (request_result ==2)
-  {
-    ui_update_departure_table(&currentDepartures);
-  }
-
-  else
-  {
-    ui_update_live_status_display("Update failed");
-  }
-}
+    else
+    {
+        ui_update_live_status_display("Update failed");
+    }
+    }
 
 // Must have function: Loop runs continously on device after setup
 void loop()
@@ -589,54 +650,66 @@ lv_timer_handler();
         {
             case SETTINGS_BUTTON:
                 lv_obj_set_tile_id(tileview, 2, 0, LV_ANIM_ON); //Changing to the settings screen
+
                 break;
 
             case REFRESH_BUTTON:
-                refreshNow();
+                if (millis() - lastRefresh >= 5000){
+                    refreshNow();
+                }
+
                 break;
 
             case STOP_DROPDOWN:
             {
                 //Avaliable stops
-                uint16_t index = lv_dropdown_get_selected(dropdown_stops);
-
+                uint16_t index = lv_dropdown_get_selected(dropdown_stops); //get stop index from dropdown
+                
                 if (index < 5 && selectStop(index))
                 {
                     //Changing current stop data
                     ui_set_current_stop(currentStop.name);
 
-                    currentDepartures = StopData{currentStop.name, currentStop.id};
-
-                    ui_update_departure_table(&currentDepartures);
-
-                    //Sending a new request from the current stop
-                    refreshNow();
+                    applySettings();
                 }
+
                 break;
             }
 
             case TRANSPORT_DROPDOWN:
             {
-
                 //Avaliable transport types
-                uint16_t index = lv_dropdown_get_selected(dropdown_transport);
-
+                uint16_t index = lv_dropdown_get_selected(dropdown_transport); //get transport index from dropdown
+                
                 const char* labels[] = {
                     "All Transport Types",
                     "Bus",
                     "Train",
                     "Ferry"
                 };
-
+                
                 if (index < 4)
                 {
+                    //Changing current transport type data
                     ui_set_current_transport(labels[index]);
 
-                    currentDepartures = StopData{currentStop.name,currentStop.id};
-
-                    ui_update_departure_table(&currentDepartures);
-                    refreshNow();
+                    applySettings();
                 }
+
+                break;
+            }
+
+            case SAVE_BUTTON:
+            {
+                saveSettings();
+                
+                break;
+            }
+
+            case RESET_BUTTON:
+            {
+                restoreSettings();
+
                 break;
             }
 

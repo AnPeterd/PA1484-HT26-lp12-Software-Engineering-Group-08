@@ -18,7 +18,7 @@ const size_t STOP_COUNT = sizeof(STOPS) / sizeof(STOPS[0]);
 Stop currentStop = STOPS[0];
 
 bool selectStop(size_t index){
-    if(index>=STOP_COUNT){ return false; }
+    if(index>=STOP_COUNT || index<0){ return false; }
     currentStop = STOPS[index];
     return true; 
 }
