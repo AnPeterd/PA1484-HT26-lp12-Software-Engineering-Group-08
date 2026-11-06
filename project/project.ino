@@ -18,6 +18,10 @@
 
 #include "departures.hpp"
 
+#include <iostream>
+#include <algorithm>
+
+
 
 MemorySaver saved_settings;
 
@@ -411,7 +415,7 @@ void ui_update_departure_table(const StopData *stopData) {
     snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), current_transport_type.c_str());
     lv_label_set_text(lbl_stopLabel, stopLabel);
 
-    ui_update_live_status_display("Active"); // Uppdatera live status
+    ui_update_live_status_display("Live Data: Active (Trafiklab)"); // Uppdatera live status
 
     for (int i = 0; i < stopData->getCount() && i < 5; i++) {
         const Departure* departure = stopData->getDeparture(i);
@@ -424,9 +428,11 @@ void ui_update_departure_table(const StopData *stopData) {
         //     continue;
         // }  
         
-        // if (departure != nullptr && matches) 
-        if (departure != nullptr) 
-        {
+        // if (departure != nullptr && matches)
+        // Uppdatera current_transport_type med transporttypen från avgången
+
+        if (departure != nullptr) {
+            Serial.println(departure->getTransportMode().c_str());
             std::string timeStatus = std::string(departure->getTime().c_str()) + " - " + (departure->getStatus().c_str());
 
             lv_table_set_cell_value( dep_table, rowIndex, 0, timeStatus.c_str() );
@@ -542,9 +548,11 @@ void restoreSettings()
 {
     selectStop(0);
     ui_set_current_stop(currentStop.name);
+    lv_dropdown_set_selected(dropdown_stops, 0);
 
     //current_transport_type = DEFAULT_TRANSPORT;
     ui_set_current_transport(DEFAULT_TRANSPORT);
+    lv_dropdown_set_selected(dropdown_transport, 0);
 
     applySettings();
     
@@ -565,12 +573,14 @@ void loadSettings()
 
     selectStop(latestStop);
     ui_set_current_stop(currentStop.name);
+    lv_dropdown_set_selected(dropdown_stops, latestStop);
     
     if (latestTransport > 4 || latestTransport < -1) {
         latestTransport = 0;
     }
     // current_transport_type = labels[latestTransport];
     ui_set_current_transport(labels[latestTransport]);
+    lv_dropdown_set_selected(dropdown_transport, latestTransport);
 
     applySettings();
     
