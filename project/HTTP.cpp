@@ -5,6 +5,13 @@
 int8_t request_send (String url, StopData& result, const String& transport, StopData& result_route, int8_t request_type)
 {
 
+  if (WiFi.status()!= WL_CONNECTED)
+    {
+        Serial.println("No WiFi connection - unable to send request");
+        return 6;
+    }
+
+    
   HTTPClient http;
 
   http.useHTTP10(true); //for smoother stream data - no chunked transfer encoding
