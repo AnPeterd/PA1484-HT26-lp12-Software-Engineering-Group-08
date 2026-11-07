@@ -27,6 +27,7 @@ bool MemorySaver::saveUInt(const char* key, uint32_t value) {
     }
 }
 
+// This returns Arduino string from NVS. If const char* is needed - just use .c_str().
 String MemorySaver::loadString(const char* key, const char* defaultValue) {
     if (!initialized) {
         return defaultValue;
@@ -36,12 +37,33 @@ String MemorySaver::loadString(const char* key, const char* defaultValue) {
     }
 }
 
+// putString natively supports c strings
 bool MemorySaver::saveString(const char* key, const char* value) {
     if (!initialized) {
         return false;
     }
     else {
         return (storage.putString(key, value) > 0);
+    }
+}
+
+// putString natively supports Arduino Strings
+bool MemorySaver::saveString(const char* key, const String& value) {
+    if (!initialized) {
+        return false;
+    }
+    else {
+        return (storage.putString(key, value) > 0);
+    }
+}
+
+// funktion overload for std::string
+bool MemorySaver::saveString(const char* key, const std::string& value) {
+    if (!initialized) {
+        return false;
+    }
+    else {
+        return (storage.putString(key, value.c_str()) > 0);
     }
 }
 
