@@ -2,26 +2,19 @@
 #include "secrets.h"
 #include "departure_parser.hpp"
 
-
-int8_t request_send(String stop_id, StopData& result, const String& transport)
+int8_t request_send (String url, StopData& result, const String& transport, StopData& result_route, int8_t request_type)
 {
-    if (WiFi.status()!= WL_CONNECTED)
-    {
-        Serial.println("No WiFi connection - unable to send request");
-        return 6;
-    }
 
-    HTTPClient http; 
+  HTTPClient http;
 
-    String url = String("https://realtime-api.trafiklab.se/v1/departures/") + stop_id + "?key=" + API_KEY; // creation of URL for the upcoming request
-    
-    http.useHTTP10(true); //for smoother stream data - no chunked transfer encoding
-    http.setConnectTimeout(5000);
-    http.setTimeout(10000); //Limiting connection time
+  http.useHTTP10(true); //for smoother stream data - no chunked transfer encoding
+  http.setConnectTimeout(5000);
+  http.setTimeout(10000); //Limiting connection time
 
-    bool begin_result = http.begin(url);
+  bool begin_result = http.begin(url);
 
-    if (begin_result == false) 
+
+  if (begin_result == false) 
     {
         Serial.println ("Request not sent - bad url");
         return 6;
@@ -48,9 +41,19 @@ int8_t request_send(String stop_id, StopData& result, const String& transport)
 
     }
 
-    bool parsed = parseDepartures(http.getStream(), result, transport);
+    bool parsed = false;
 
-    http.end(); //closing the HTTP connection
+    if (request_type ==1) //departure type
+    {
+      parsed = parseDepartures(http.getStream(), result, transport);
+    }
+
+    else if (request_type == 0)
+    {
+      parsed = true; //Parcer function here
+    }
+
+        http.end(); //closing the HTTP connection
 
     if (!parsed) {
     Serial.println("Parsing failed");
@@ -65,7 +68,9 @@ int8_t request_send(String stop_id, StopData& result, const String& transport)
 
 int8_t refresh_departures(String stop_id, StopData& result, const String& transport)
 {
-    int8_t refresh_status = request_send(stop_id, result, transport);
+  StopData dummy{"", ""};
+  String url = String("https://realtime-api.trafiklab.se/v1/departures/") + stop_id + "?key=" + API_KEY;
+    int8_t refresh_status = request_send(url, result, transport, dummy, 1);
     if (refresh_status >= 3)
     {
       wl_status_t wifi_status = WiFi.status();
@@ -79,7 +84,7 @@ int8_t refresh_departures(String stop_id, StopData& result, const String& transp
         else
         {
           // Wi-Fi recovered - retry request
-           refresh_status = request_send(stop_id, result, transport);
+           refresh_status = request_send(url, result, transport, dummy, 1);
            
           // No further recovery attempts are made if the retry fails
         }
@@ -114,4 +119,15 @@ int8_t refresh_departures(String stop_id, StopData& result, const String& transp
     }
 
     return refresh_status;
+}
+
+
+
+int8_t route_refresh (String start_stop_id, String end_stop_id, StopData& result)
+{
+  StopData dummy{"", ""};//Object used for the irrelevent data type
+  String url = String("https://api.resrobot.se/v2.1/trip?originId=") + start_stop_id + "&destId=" + end_stop_id + "&format=json&numF=3&passlist=0&poly=0&accessId=" + RESROBOT_API_KEY; // creation of URL for the upcoming request
+  int8_t refresh_status = request_send(url, dummy, "ALL", result, 0);
+  return refresh_status;
+
 }
