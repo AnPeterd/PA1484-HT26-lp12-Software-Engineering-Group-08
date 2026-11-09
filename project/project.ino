@@ -229,6 +229,7 @@ static lv_obj_t *add_stop_label(lv_obj_t *parent, const char* stopName, const ch
     char initStopLabel[128];
     snprintf(initStopLabel, sizeof(initStopLabel), "Stop: %s [%s]", stopName, transportType);
     lv_label_set_text(lbl_stopLabel, initStopLabel);
+    lv_obj_set_style_text_font(lbl_stopLabel, &montserrat_swedish_14, 0);
     
     return lbl_stopLabel;
 }
@@ -242,6 +243,7 @@ void ui_update_stop_label(const char* stopName, const char* transportType)
     snprintf(text, sizeof(text), "Stop: %s [%s]", stopName, transportType);
 
     lv_label_set_text(lbl_stopLabel, text);
+    lv_obj_set_style_text_font(lbl_stopLabel, &montserrat_swedish_14, 0);
 }
 
 
@@ -313,7 +315,7 @@ static void create_ui()
     lv_obj_align(lbl_info, LV_ALIGN_CENTER, 0, 15);
 
     lv_obj_t *hint = lv_label_create(t_start);
-    lv_label_set_text(hint, "<- Swipe to navigate ->");
+    lv_label_set_text(hint, "Swipe to navigate ->");
     lv_obj_set_style_text_font(hint, &lv_font_montserrat_28, 0);
     lv_obj_align(hint, LV_ALIGN_BOTTOM_MID, 0, -10);
   }
@@ -327,10 +329,11 @@ static void create_ui()
 
     // TEST label for Swedish characters
     lv_obj_t *test_label = lv_label_create(lv_scr_act());
-
     lv_label_set_text( test_label, "Svenska: å ä ö Å Ä Ö");
 
     lv_obj_set_style_text_font( test_label, &montserrat_swedish_14, 0 );
+    lv_obj_align( test_label, LV_ALIGN_CENTER, 0, 0 );
+
     
     // contents
   }
@@ -373,8 +376,12 @@ static void create_ui()
     lv_obj_align(lbl_live_status, LV_ALIGN_TOP_MID, 0, 55);
 
     // Dropdown for bus stops
+    lv_obj_t *stops = lv_label_create(t_settings);
+    lv_label_set_text(stops, "Campus Gräsvik\nKarlskrona Centralstation\nKarlskrona centrum\nKungsplan\nBergåsa station");
+    lv_obj_set_style_text_font(stops, &montserrat_swedish_14, 0);
+    
     dropdown_stops = lv_dropdown_create(t_settings);
-    lv_dropdown_set_options(dropdown_stops, "Campus Gräsvik\nKarlskrona Centralstation\nKarlskrona centrum\nKungsplan\nBergåsa station");
+    lv_dropdown_set_options(dropdown_stops, lv_label_get_text(stops));
     lv_obj_set_size(dropdown_stops, 230, 55);
     lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -35);
 
