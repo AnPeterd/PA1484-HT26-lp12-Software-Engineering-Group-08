@@ -294,7 +294,7 @@ static void create_ui()
   lv_obj_set_size(tileview, lv_disp_get_hor_res(NULL), lv_disp_get_ver_res(NULL));
   lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
 
-  // horisontal tiles (Kolonn 0, 1 och 2)
+  // horisontal tiles (Kolonn 0, 1 och 2) 
   t_start      = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR); // Tile 0: start
   t_journey    = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR); // Tile 1: Journey
   t_departures = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR); // Tile 2: departures
@@ -334,6 +334,9 @@ static void create_ui()
     lv_obj_t *title = lv_label_create(t_journey);
     lv_label_set_text(title, "Journey");
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
+
+    // Coming soon US 5.1: Dropdown for stops and destinations? , when clicked - 
+    // should show a table (eg. 10 row and column) over all the stops on that departure where the last stop is the destination.
 
     // TEST label for Swedish characters
     lv_obj_t *test_label = lv_label_create(lv_scr_act());
@@ -387,7 +390,7 @@ static void create_ui()
     lv_obj_t *stops = lv_label_create(t_settings);
     lv_label_set_text(stops, "Campus Gräsvik\nKarlskrona Centralstation\nKarlskrona centrum\nKungsplan\nBergåsa station");
     lv_obj_set_style_text_font(stops, &montserrat_swedish_14, 0);
-    
+
     dropdown_stops = lv_dropdown_create(t_settings);
     lv_dropdown_set_options(dropdown_stops, lv_label_get_text(stops));
     lv_obj_set_size(dropdown_stops, 230, 55);
