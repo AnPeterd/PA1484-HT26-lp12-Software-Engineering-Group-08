@@ -447,7 +447,13 @@ void ui_update_departure_table(const StopData *stopData) {
 
             lv_table_set_cell_value( dep_table, rowIndex, 0, timeStatus.c_str() );
 
-            lv_table_set_cell_value( dep_table, rowIndex, 1, departure->getLine().c_str() );
+            if ( strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0 ) {
+                String mode_line = String(departure->getLine().c_str() ) + String(" / ") + String( departure->getTransportMode().c_str() );
+                lv_table_set_cell_value( dep_table, rowIndex, 1, mode_line.c_str() );
+            }
+            else {
+                lv_table_set_cell_value( dep_table, rowIndex, 1, departure->getLine().c_str() );
+            }
 
             lv_table_set_cell_value( dep_table, rowIndex, 2, departure->getDestination().c_str() );
         }
