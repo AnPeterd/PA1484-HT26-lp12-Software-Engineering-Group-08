@@ -417,14 +417,14 @@ void ui_apply_user_settings(const char* selectedStop, const char* selectedTransp
 
 // Function for updating the departure table with new live data from the network/logic module
 void ui_update_departure_table(const StopData *stopData) {
-    if (!stopData || !dep_table && current_stop_name.c_str()) { // controll current_stop_name is not empty
+    if ( !stopData || !dep_table && current_stop_name.empty() ) { // controll current_stop_name is not empty
         ui_update_live_status_display("No Departures");
         return;   
     }  
 
     // Update title with the active stop (the one the user has selected)
     char stopLabel[128];
-    // Use c_str() because %s expects a C string
+    // Use c_str() because %s expects a const char* (C-style string)
     snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), current_transport_type.c_str());
     lv_label_set_text(lbl_stopLabel, stopLabel);
 
