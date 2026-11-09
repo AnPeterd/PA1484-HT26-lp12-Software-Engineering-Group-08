@@ -21,6 +21,12 @@
 // Swedish font
 LV_FONT_DECLARE(montserrat_swedish_14);
 
+#include <iostream>
+#include <algorithm>
+
+
+
+MemorySaver saved_settings;
 
 static lv_obj_t* tileview;
 static lv_obj_t* t_start;
@@ -58,7 +64,9 @@ std::string saved_stop_name = DEFAULT_STOP;
 std::string saved_transport_type = DEFAULT_TRANSPORT;
 
 // Stores the latest successfully parsed departures for Campus Gräsvik
-StopData campusDepartures{"Campus Gräsvik"};
+StopData currentDepartures{STOPS[0].name, STOPS[0].id};
+
+uint32_t lastRefresh = 0;
 
 
 LilyGo_Class amoled;
@@ -435,21 +443,24 @@ void ui_update_departure_table(const StopData *stopData) {
     snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), current_transport_type.c_str());
     lv_label_set_text(lbl_stopLabel, stopLabel);
 
-    ui_update_live_status_display("Active"); // Update live status
+    ui_update_live_status_display("Live Data: Active (Trafiklab)"); // Update live status
 
     for (int i = 0; i < stopData->getCount() && i < 5; i++) {
         const Departure* departure = stopData->getDeparture(i);
         int rowIndex = i + 1;
 
-        bool matches = strcmp(departure->getTransportMode().c_str(), current_transport_type.c_str()) == 0 || strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0;
+        // bool matches = strcmp(departure->getTransportMode().c_str(), current_transport_type.c_str()) == 0 || strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0;
 
-        if(!matches) {
-            // if the departure doesn't match the selected transport type, continue
-            continue;
-        }  
+        // if(!matches) {
+        //     // Om transporttypen inte matchar, hoppa över denna avgång
+        //     continue;
+        // }  
         
-        if (departure != nullptr && matches) 
-        {
+        // if (departure != nullptr && matches)
+        // Uppdatera current_transport_type med transporttypen från avgången
+
+        if (departure != nullptr) {
+            Serial.println(departure->getTransportMode().c_str());
             std::string timeStatus = std::string(departure->getTime().c_str()) + " - " + (departure->getStatus().c_str());
 
             lv_table_set_cell_value( dep_table, rowIndex, 0, timeStatus.c_str() );
@@ -544,81 +555,215 @@ static int8_t connect_wifi()
   }
 }
 
-MemorySaver memorySaver; // temporarily placed here
+
+//Data updating function connected to manual update button and automatic data
+void refreshNow()
+{
+    int8_t status = refresh_departures(currentStop.id, currentDepartures, String(current_transport_type.c_str()));
+
+    if (status == 2)
+        ui_update_departure_table(&currentDepartures);
+    else
+        ui_update_live_status_display("Update failed");
+
+    lastRefresh = millis();
+}
+
+void applySettings()
+{
+    currentDepartures = StopData{currentStop.name,currentStop.id};
+    ui_update_departure_table(&currentDepartures);
+    refreshNow();
+    
+    return;
+}
+
+void restoreSettings()
+{
+    selectStop(0);
+    ui_set_current_stop(currentStop.name);
+    lv_dropdown_set_selected(dropdown_stops, 0);
+
+    //current_transport_type = DEFAULT_TRANSPORT;
+    ui_set_current_transport(DEFAULT_TRANSPORT);
+    lv_dropdown_set_selected(dropdown_transport, 0);
+
+    applySettings();
+    
+    return;
+}
+
+void loadSettings()
+{
+    const char* labels[] = {
+        "All Transport Types",
+        "Bus",
+        "Train",
+        "Ferry"
+    };
+
+    uint32_t latestStop = saved_settings.loadUInt("latestStop", 0);
+    uint32_t latestTransport = saved_settings.loadUInt("latestTransport", 0);
+
+    selectStop(latestStop);
+    ui_set_current_stop(currentStop.name);
+    lv_dropdown_set_selected(dropdown_stops, latestStop);
+    
+    if (latestTransport > 4 || latestTransport < -1) {
+        latestTransport = 0;
+    }
+    // current_transport_type = labels[latestTransport];
+    ui_set_current_transport(labels[latestTransport]);
+    lv_dropdown_set_selected(dropdown_transport, latestTransport);
+
+    applySettings();
+    
+    return;
+}
+
+void saveSettings()
+{
+    saved_settings.saveUInt("latestStop", lv_dropdown_get_selected(dropdown_stops));
+    saved_settings.saveUInt("latestTransport", lv_dropdown_get_selected(dropdown_transport));
+    
+    return;
+}
+
 
 // Must have function: Setup is run once on startup
 void setup()
 {
-  Serial.begin(115200);
-  delay(1000);
+    Serial.begin(115200);
+    delay(1000);
 
-  if (!amoled.begin()) {
-    Serial.println("Failed to init LilyGO AMOLED.");
-    while (true) delay(1000);
-  }
+    if (!saved_settings.begin()) {    // open map with settings
+        Serial.println("Failed to init Saved Settings");
+    }
+    
+    if (!amoled.begin()) {
+        Serial.println("Failed to init LilyGO AMOLED.");
+        while (true) delay(1000);
+    }
+        
+    beginLvglHelper(amoled);   // init LVGL for this board
+        
+    create_ui();
+    touch_input_init(
+        btn_set,
+        btn_save,
+        btn_reset,
+        btn_refresh,
+        dropdown_stops,
+        dropdown_transport
+    );
+        
+    
+    int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
+    
+    loadSettings();
+    
+    // Testing requests
+    // int8_t request_result = 6;
+    
+    if (WiFi_code==1)
+    {
+        refreshNow();
+        ui_update_departure_table(&currentDepartures);
+    }
 
-  beginLvglHelper(amoled);   // init LVGL for this board
-
-  create_ui();
-/* Enable when touch_input_init is implemented.
-touch_input_init(
-    btn_set,
-    btn_save,
-    btn_reset,
-    btn_refresh,
-    dropdown_stops,
-    dropdown_transport
-);
-*/
-
-  int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
-  
-  //Testing requests
-  int8_t request_result = 6;
-
-  if (WiFi_code==1)
-  {
-    request_result = request_send(STOPS[0].id, campusDepartures);
-  }
-
-  if (request_result ==2)
-  {
-    ui_update_departure_table(&campusDepartures);
-  }
-
-  else
-  {
-    ui_update_live_status_display("Update failed");
-  }
-}
+    else
+    {
+        ui_update_live_status_display("Update failed");
+    }
+    }
 
 // Must have function: Loop runs continously on device after setup
 void loop()
 {
-  //when ready - current_stop variable should be here 
-  const Stop& current_stop = STOPS[0]; //Placeholder; When proper objects are ready - should be replaced
+lv_timer_handler();
 
-  //US4.1: As a user, I want the live departure data to update automatically in 60 seconds
-
-  static uint32_t lastRefresh = 0;
-
-if (millis() - lastRefresh >= 60000) {
-
-    int8_t request_status = refresh_departures(current_stop.id, campusDepartures);
-
-    if (request_status == 2) {
-        ui_update_departure_table(&campusDepartures);
-    } 
-    
-    else 
+    //Implementing TouchInput, revorking loop.
+    //NOT TESTED YET!
+    if (touch_input_has_event())
     {
-        ui_update_live_status_display("Update failed");
+
+        //Getting current input event
+        InputEvent event = touch_input_get_event();
+
+        switch (event)
+        {
+            case SETTINGS_BUTTON:
+                lv_obj_set_tile_id(tileview, 2, 0, LV_ANIM_ON); //Changing to the settings screen
+
+                break;
+
+            case REFRESH_BUTTON:
+                if (millis() - lastRefresh >= 5000){
+                    refreshNow();
+                }
+
+                break;
+
+            case STOP_DROPDOWN:
+            {
+                //Avaliable stops
+                uint16_t index = lv_dropdown_get_selected(dropdown_stops); //get stop index from dropdown
+                
+                if (index < 5 && selectStop(index))
+                {
+                    //Changing current stop data
+                    ui_set_current_stop(currentStop.name);
+
+                    applySettings();
+                }
+
+                break;
+            }
+
+            case TRANSPORT_DROPDOWN:
+            {
+                //Avaliable transport types
+                uint16_t index = lv_dropdown_get_selected(dropdown_transport); //get transport index from dropdown
+                
+                const char* labels[] = {
+                    "All Transport Types",
+                    "Bus",
+                    "Train",
+                    "Ferry"
+                };
+                
+                if (index < 4)
+                {
+                    //Changing current transport type data
+                    ui_set_current_transport(labels[index]);
+
+                    applySettings();
+                }
+
+                break;
+            }
+
+            case SAVE_BUTTON:
+            {
+                saveSettings();
+                
+                break;
+            }
+
+            case RESET_BUTTON:
+            {
+                restoreSettings();
+
+                break;
+            }
+
+            default:
+                break;
+        }
     }
-    
-    lastRefresh = millis();
-}
 
+    if (millis() - lastRefresh >= 60000)
+        refreshNow();
 
-  lv_timer_handler();
-  delay(5);
+    delay(5);
 }

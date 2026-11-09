@@ -1,0 +1,1481 @@
+{
+  "Trip": [
+    {
+      "Origin": {
+        "name": "Torskors (Karlskrona kn)",
+        "type": "ST",
+        "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+        "extId": "740011646",
+        "lon": 15.63359,
+        "lat": 56.210789,
+        "time": "08:06:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT26M"
+      },
+      "Destination": {
+        "name": "Karlskrona Amiralen",
+        "type": "ST",
+        "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+        "extId": "740031800",
+        "lon": 15.644458,
+        "lat": 56.197287,
+        "routeIdx": 29,
+        "prognosisType": "PROGNOSED",
+        "time": "08:23:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT3M"
+      },
+      "ServiceDays": [
+        {
+          "planningPeriodBegin": "2026-11-03",
+          "planningPeriodEnd": "2027-11-03",
+          "sDaysR": "inte varje dag",
+          "sDaysI": "9. nov 2026 t o m 1. feb 2027 mån - fre; utom 24., 25., 31. dec, 1., 6. jan",
+          "sDaysB": "F3E7CF9F3E7CE1C367CF9F2000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "LegList": {
+        "Leg": [
+          {
+            "Origin": {
+              "name": "Torskors (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+              "extId": "740011646",
+              "lon": 15.63359,
+              "lat": 56.210789,
+              "time": "08:06:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Backabo (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Backabo (Karlskrona kn)@X=15629050@Y=56203022@U=1@L=740031791@",
+              "extId": "740031791",
+              "lon": 15.62905,
+              "lat": 56.203022,
+              "time": "08:17:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "GisRef": {
+              "ref": "G|1|G@F|A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@|A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@|9112026|80600|81700|bf|ft@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§bt@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§tt@0@5000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§||||"
+            },
+            "GisRoute": {
+              "dist": 952,
+              "durS": "PT11M",
+              "dirGeo": 0
+            },
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_walk"
+                },
+                "name": "Promenad",
+                "internalName": "Promenad"
+              }
+            ],
+            "id": "0",
+            "idx": 0,
+            "name": "Promenad",
+            "type": "WALK",
+            "duration": "PT11M",
+            "dist": 952
+          },
+          {
+            "Origin": {
+              "name": "Backabo (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Backabo (Karlskrona kn)@X=15629050@Y=56203022@U=1@L=740031791@",
+              "extId": "740031791",
+              "lon": 15.62905,
+              "lat": 56.203022,
+              "routeIdx": 26,
+              "prognosisType": "PROGNOSED",
+              "time": "08:17:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Karlskrona Amiralen",
+              "type": "ST",
+              "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+              "extId": "740031800",
+              "lon": 15.644458,
+              "lat": 56.197287,
+              "routeIdx": 29,
+              "prognosisType": "PROGNOSED",
+              "time": "08:23:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT3M"
+            },
+            "Notes": {
+              "Note": [
+                {
+                  "value": "Lag 2015:953 tillämpas",
+                  "key": "EG",
+                  "type": "A",
+                  "priority": 0,
+                  "routeIdxFrom": 26,
+                  "routeIdxTo": 29,
+                  "txtN": "Lag 2015:953 tillämpas"
+                }
+              ]
+            },
+            "JourneyDetailRef": {
+              "ref": "1|34790|0|1|9112026"
+            },
+            "JourneyStatus": "P",
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "matchId": "1;1;28"
+              },
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "routeIdxFrom": 26,
+                "routeIdxTo": 29,
+                "matchId": "1;1;28"
+              }
+            ],
+            "JourneyDetail": {
+              "ref": "1|34790|0|1|9112026",
+              "dayOfOperation": "2026-11-09"
+            },
+            "id": "1",
+            "idx": 1,
+            "name": "Länstrafik buss 1",
+            "number": "1",
+            "category": "BLT",
+            "type": "JNY",
+            "reachable": true,
+            "waitingState": "UNDEF",
+            "direction": "Lyckeby Slottsbacken (Karlskrona kn)",
+            "directionFlag": "2",
+            "duration": "PT6M"
+          }
+        ]
+      },
+      "calculation": "INITIAL",
+      "TripStatus": {
+        "hintCode": 0,
+        "unsharp": true
+      },
+      "idx": 0,
+      "tripId": "C-0",
+      "ctxRecon": "¶HKI¶G@F$A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@$A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@$202611090806$202611090817$$$1$$$$$$§T$A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@$A=1@O=Karlskrona Amiralen@L=740031800@a=128@$202611090817$202611090823$BLT    1$$1$$$$$$¶GP¶ft@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§bt@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§tt@0@5000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§¶KC¶#VE#2#CF#100#CA#0#CM#0#SICT#0#AM#97#AM2#0#RT#4#¶KRCC¶#VE#1#",
+      "duration": "PT17M",
+      "rtDuration": "PT17M",
+      "checksum": "18a4f0da_3"
+    },
+    {
+      "Origin": {
+        "name": "Torskors (Karlskrona kn)",
+        "type": "ST",
+        "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+        "extId": "740011646",
+        "lon": 15.63359,
+        "lat": 56.210789,
+        "routeIdx": 9,
+        "prognosisType": "PROGNOSED",
+        "time": "08:12:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT26M"
+      },
+      "Destination": {
+        "name": "Karlskrona Amiralen",
+        "type": "ST",
+        "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+        "extId": "740031800",
+        "lon": 15.644458,
+        "lat": 56.197287,
+        "routeIdx": 29,
+        "prognosisType": "PROGNOSED",
+        "time": "08:33:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT3M"
+      },
+      "ServiceDays": [
+        {
+          "planningPeriodBegin": "2026-11-03",
+          "planningPeriodEnd": "2027-11-03",
+          "sDaysR": "inte varje dag",
+          "sDaysI": "9. nov 2026 t o m 1. feb 2027 mån - fre; utom 24., 25., 31. dec, 1., 6. jan",
+          "sDaysB": "F3E7CF9F3E7CE1C367CF9F2000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "LegList": {
+        "Leg": [
+          {
+            "Origin": {
+              "name": "Torskors (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+              "extId": "740011646",
+              "lon": 15.63359,
+              "lat": 56.210789,
+              "routeIdx": 9,
+              "prognosisType": "PROGNOSED",
+              "time": "08:12:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Ekeberg (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Ekeberg (Karlskrona kn)@X=15619468@Y=56198609@U=1@L=740031789@",
+              "extId": "740031789",
+              "lon": 15.619468,
+              "lat": 56.198609,
+              "routeIdx": 13,
+              "prognosisType": "PROGNOSED",
+              "time": "08:15:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT2M"
+            },
+            "Notes": {
+              "Note": [
+                {
+                  "value": "Lag 2015:953 tillämpas",
+                  "key": "EG",
+                  "type": "A",
+                  "priority": 0,
+                  "routeIdxFrom": 9,
+                  "routeIdxTo": 13,
+                  "txtN": "Lag 2015:953 tillämpas"
+                }
+              ]
+            },
+            "JourneyDetailRef": {
+              "ref": "1|38835|0|1|9112026"
+            },
+            "JourneyStatus": "P",
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 4",
+                "internalName": "Länstrafik buss 4",
+                "displayNumber": "4",
+                "num": "4",
+                "line": "4",
+                "lineId": "100000002004000001-4",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "matchId": "4;2004;25"
+              },
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 4",
+                "internalName": "Länstrafik buss 4",
+                "displayNumber": "4",
+                "num": "4",
+                "line": "4",
+                "lineId": "100000002004000001-4",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "routeIdxFrom": 9,
+                "routeIdxTo": 13,
+                "matchId": "4;2004;25"
+              }
+            ],
+            "JourneyDetail": {
+              "ref": "1|38835|0|1|9112026",
+              "dayOfOperation": "2026-11-09"
+            },
+            "id": "0",
+            "idx": 0,
+            "name": "Länstrafik buss 4",
+            "number": "4",
+            "category": "BLT",
+            "type": "JNY",
+            "reachable": true,
+            "waitingState": "UNDEF",
+            "direction": "Karlskrona centrum",
+            "directionFlag": "1",
+            "duration": "PT3M",
+            "minimumChangeDuration": "PT2M"
+          },
+          {
+            "Origin": {
+              "name": "Ekeberg (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Ekeberg (Karlskrona kn)@X=15619468@Y=56198609@U=1@L=740031789@",
+              "extId": "740031789",
+              "lon": 15.619468,
+              "lat": 56.198609,
+              "routeIdx": 24,
+              "prognosisType": "PROGNOSED",
+              "time": "08:26:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT2M"
+            },
+            "Destination": {
+              "name": "Karlskrona Amiralen",
+              "type": "ST",
+              "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+              "extId": "740031800",
+              "lon": 15.644458,
+              "lat": 56.197287,
+              "routeIdx": 29,
+              "prognosisType": "PROGNOSED",
+              "time": "08:33:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT3M"
+            },
+            "Notes": {
+              "Note": [
+                {
+                  "value": "Lag 2015:953 tillämpas",
+                  "key": "EG",
+                  "type": "A",
+                  "priority": 0,
+                  "routeIdxFrom": 24,
+                  "routeIdxTo": 29,
+                  "txtN": "Lag 2015:953 tillämpas"
+                }
+              ]
+            },
+            "JourneyDetailRef": {
+              "ref": "1|34790|1|1|9112026"
+            },
+            "JourneyStatus": "P",
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "matchId": "1;1;30"
+              },
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "routeIdxFrom": 24,
+                "routeIdxTo": 29,
+                "matchId": "1;1;30"
+              }
+            ],
+            "JourneyDetail": {
+              "ref": "1|34790|1|1|9112026",
+              "dayOfOperation": "2026-11-09"
+            },
+            "id": "1",
+            "idx": 1,
+            "name": "Länstrafik buss 1",
+            "number": "1",
+            "category": "BLT",
+            "type": "JNY",
+            "reachable": true,
+            "waitingState": "UNDEF",
+            "direction": "Lyckeby Slottsbacken (Karlskrona kn)",
+            "directionFlag": "2",
+            "duration": "PT7M"
+          }
+        ]
+      },
+      "calculation": "INITIAL",
+      "TripStatus": {
+        "convenient": true,
+        "hintCode": 460
+      },
+      "idx": 1,
+      "tripId": "C-1",
+      "ctxRecon": "¶HKI¶T$A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@$A=1@O=Ekeberg (Karlskrona kn)@L=740031789@a=128@$202611090812$202611090815$BLT    4$$1$$$$$$§T$A=1@O=Ekeberg (Karlskrona kn)@L=740031789@a=128@$A=1@O=Karlskrona Amiralen@L=740031800@a=128@$202611090826$202611090833$BLT    1$$1$$$$$$¶KC¶#VE#2#CF#100#CA#0#CM#0#SICT#0#AM#97#AM2#0#RT#4#¶KRCC¶#VE#1#",
+      "duration": "PT21M",
+      "rtDuration": "PT21M",
+      "checksum": "922b7736_3",
+      "transferCount": 1
+    },
+    {
+      "Origin": {
+        "name": "Torskors (Karlskrona kn)",
+        "type": "ST",
+        "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+        "extId": "740011646",
+        "lon": 15.63359,
+        "lat": 56.210789,
+        "time": "08:16:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT26M"
+      },
+      "Destination": {
+        "name": "Karlskrona Amiralen",
+        "type": "ST",
+        "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+        "extId": "740031800",
+        "lon": 15.644458,
+        "lat": 56.197287,
+        "routeIdx": 29,
+        "prognosisType": "PROGNOSED",
+        "time": "08:33:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT3M"
+      },
+      "ServiceDays": [
+        {
+          "planningPeriodBegin": "2026-11-03",
+          "planningPeriodEnd": "2027-11-03",
+          "sDaysR": "inte varje dag",
+          "sDaysI": "9. nov 2026 t o m 1. feb 2027 mån - fre; utom 24., 25., 31. dec, 1., 6. jan",
+          "sDaysB": "F3E7CF9F3E7CE1C367CF9F2000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "LegList": {
+        "Leg": [
+          {
+            "Origin": {
+              "name": "Torskors (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+              "extId": "740011646",
+              "lon": 15.63359,
+              "lat": 56.210789,
+              "time": "08:16:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Backabo (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Backabo (Karlskrona kn)@X=15629050@Y=56203022@U=1@L=740031791@",
+              "extId": "740031791",
+              "lon": 15.62905,
+              "lat": 56.203022,
+              "time": "08:27:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "GisRef": {
+              "ref": "G|1|G@F|A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@|A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@|9112026|81600|82700|bf|ft@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§bt@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§tt@0@5000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§||||"
+            },
+            "GisRoute": {
+              "dist": 952,
+              "durS": "PT11M",
+              "dirGeo": 0
+            },
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_walk"
+                },
+                "name": "Promenad",
+                "internalName": "Promenad"
+              }
+            ],
+            "id": "0",
+            "idx": 0,
+            "name": "Promenad",
+            "type": "WALK",
+            "duration": "PT11M",
+            "dist": 952
+          },
+          {
+            "Origin": {
+              "name": "Backabo (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Backabo (Karlskrona kn)@X=15629050@Y=56203022@U=1@L=740031791@",
+              "extId": "740031791",
+              "lon": 15.62905,
+              "lat": 56.203022,
+              "routeIdx": 26,
+              "prognosisType": "PROGNOSED",
+              "time": "08:27:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Karlskrona Amiralen",
+              "type": "ST",
+              "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+              "extId": "740031800",
+              "lon": 15.644458,
+              "lat": 56.197287,
+              "routeIdx": 29,
+              "prognosisType": "PROGNOSED",
+              "time": "08:33:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT3M"
+            },
+            "Notes": {
+              "Note": [
+                {
+                  "value": "Lag 2015:953 tillämpas",
+                  "key": "EG",
+                  "type": "A",
+                  "priority": 0,
+                  "routeIdxFrom": 26,
+                  "routeIdxTo": 29,
+                  "txtN": "Lag 2015:953 tillämpas"
+                }
+              ]
+            },
+            "JourneyDetailRef": {
+              "ref": "1|34790|1|1|9112026"
+            },
+            "JourneyStatus": "P",
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "matchId": "1;1;30"
+              },
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "routeIdxFrom": 26,
+                "routeIdxTo": 29,
+                "matchId": "1;1;30"
+              }
+            ],
+            "JourneyDetail": {
+              "ref": "1|34790|1|1|9112026",
+              "dayOfOperation": "2026-11-09"
+            },
+            "id": "1",
+            "idx": 1,
+            "name": "Länstrafik buss 1",
+            "number": "1",
+            "category": "BLT",
+            "type": "JNY",
+            "reachable": true,
+            "waitingState": "UNDEF",
+            "direction": "Lyckeby Slottsbacken (Karlskrona kn)",
+            "directionFlag": "2",
+            "duration": "PT6M"
+          }
+        ]
+      },
+      "calculation": "INITIAL",
+      "TripStatus": {
+        "hintCode": 0,
+        "unsharp": true
+      },
+      "idx": 2,
+      "tripId": "C-2",
+      "ctxRecon": "¶HKI¶G@F$A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@$A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@$202611090816$202611090827$$$1$$$$$$§T$A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@$A=1@O=Karlskrona Amiralen@L=740031800@a=128@$202611090827$202611090833$BLT    1$$1$$$$$$¶GP¶ft@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§bt@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§tt@0@5000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§¶KC¶#VE#2#CF#100#CA#0#CM#0#SICT#0#AM#97#AM2#0#RT#4#¶KRCC¶#VE#1#",
+      "duration": "PT17M",
+      "rtDuration": "PT17M",
+      "checksum": "de4ee75f_3"
+    },
+    {
+      "Origin": {
+        "name": "Torskors (Karlskrona kn)",
+        "type": "ST",
+        "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+        "extId": "740011646",
+        "lon": 15.63359,
+        "lat": 56.210789,
+        "time": "08:26:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT26M"
+      },
+      "Destination": {
+        "name": "Karlskrona Amiralen",
+        "type": "ST",
+        "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+        "extId": "740031800",
+        "lon": 15.644458,
+        "lat": 56.197287,
+        "routeIdx": 29,
+        "prognosisType": "PROGNOSED",
+        "time": "08:43:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT3M"
+      },
+      "ServiceDays": [
+        {
+          "planningPeriodBegin": "2026-11-03",
+          "planningPeriodEnd": "2027-11-03",
+          "sDaysR": "inte varje dag",
+          "sDaysI": "9. nov 2026 t o m 1. feb 2027 mån - fre; utom 24., 25., 31. dec, 1., 6. jan",
+          "sDaysB": "F3E7CF9F3E7CE1C367CF9F2000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "LegList": {
+        "Leg": [
+          {
+            "Origin": {
+              "name": "Torskors (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+              "extId": "740011646",
+              "lon": 15.63359,
+              "lat": 56.210789,
+              "time": "08:26:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Backabo (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Backabo (Karlskrona kn)@X=15629050@Y=56203022@U=1@L=740031791@",
+              "extId": "740031791",
+              "lon": 15.62905,
+              "lat": 56.203022,
+              "time": "08:37:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "GisRef": {
+              "ref": "G|1|G@F|A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@|A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@|9112026|82600|83700|bf|ft@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§bt@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§tt@0@5000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§||||"
+            },
+            "GisRoute": {
+              "dist": 952,
+              "durS": "PT11M",
+              "dirGeo": 0
+            },
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_walk"
+                },
+                "name": "Promenad",
+                "internalName": "Promenad"
+              }
+            ],
+            "id": "0",
+            "idx": 0,
+            "name": "Promenad",
+            "type": "WALK",
+            "duration": "PT11M",
+            "dist": 952
+          },
+          {
+            "Origin": {
+              "name": "Backabo (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Backabo (Karlskrona kn)@X=15629050@Y=56203022@U=1@L=740031791@",
+              "extId": "740031791",
+              "lon": 15.62905,
+              "lat": 56.203022,
+              "routeIdx": 26,
+              "prognosisType": "PROGNOSED",
+              "time": "08:37:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Karlskrona Amiralen",
+              "type": "ST",
+              "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+              "extId": "740031800",
+              "lon": 15.644458,
+              "lat": 56.197287,
+              "routeIdx": 29,
+              "prognosisType": "PROGNOSED",
+              "time": "08:43:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT3M"
+            },
+            "Notes": {
+              "Note": [
+                {
+                  "value": "Lag 2015:953 tillämpas",
+                  "key": "EG",
+                  "type": "A",
+                  "priority": 0,
+                  "routeIdxFrom": 26,
+                  "routeIdxTo": 29,
+                  "txtN": "Lag 2015:953 tillämpas"
+                }
+              ]
+            },
+            "JourneyDetailRef": {
+              "ref": "1|34790|2|1|9112026"
+            },
+            "JourneyStatus": "P",
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "matchId": "1;1;32"
+              },
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "routeIdxFrom": 26,
+                "routeIdxTo": 29,
+                "matchId": "1;1;32"
+              }
+            ],
+            "JourneyDetail": {
+              "ref": "1|34790|2|1|9112026",
+              "dayOfOperation": "2026-11-09"
+            },
+            "id": "1",
+            "idx": 1,
+            "name": "Länstrafik buss 1",
+            "number": "1",
+            "category": "BLT",
+            "type": "JNY",
+            "reachable": true,
+            "waitingState": "UNDEF",
+            "direction": "Lyckeby Slottsbacken (Karlskrona kn)",
+            "directionFlag": "2",
+            "duration": "PT6M"
+          }
+        ]
+      },
+      "calculation": "INITIAL",
+      "TripStatus": {
+        "hintCode": 0,
+        "unsharp": true
+      },
+      "idx": 3,
+      "tripId": "C-3",
+      "ctxRecon": "¶HKI¶G@F$A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@$A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@$202611090826$202611090837$$$1$$$$$$§T$A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@$A=1@O=Karlskrona Amiralen@L=740031800@a=128@$202611090837$202611090843$BLT    1$$1$$$$$$¶GP¶ft@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§bt@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§tt@0@5000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§¶KC¶#VE#2#CF#100#CA#0#CM#0#SICT#0#AM#97#AM2#0#RT#4#¶KRCC¶#VE#1#",
+      "duration": "PT17M",
+      "rtDuration": "PT17M",
+      "checksum": "5296ff2e_3"
+    },
+    {
+      "Origin": {
+        "name": "Torskors (Karlskrona kn)",
+        "type": "ST",
+        "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+        "extId": "740011646",
+        "lon": 15.63359,
+        "lat": 56.210789,
+        "routeIdx": 9,
+        "prognosisType": "PROGNOSED",
+        "time": "08:32:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT26M"
+      },
+      "Destination": {
+        "name": "Karlskrona Amiralen",
+        "type": "ST",
+        "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+        "extId": "740031800",
+        "lon": 15.644458,
+        "lat": 56.197287,
+        "routeIdx": 29,
+        "prognosisType": "PROGNOSED",
+        "time": "08:53:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT3M"
+      },
+      "ServiceDays": [
+        {
+          "planningPeriodBegin": "2026-11-03",
+          "planningPeriodEnd": "2027-11-03",
+          "sDaysR": "inte varje dag",
+          "sDaysI": "9. nov 2026 t o m 1. feb 2027 mån - fre; utom 24., 25., 31. dec, 1., 6. jan",
+          "sDaysB": "F3E7CF9F3E7CE1C367CF9F2000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "LegList": {
+        "Leg": [
+          {
+            "Origin": {
+              "name": "Torskors (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+              "extId": "740011646",
+              "lon": 15.63359,
+              "lat": 56.210789,
+              "routeIdx": 9,
+              "prognosisType": "PROGNOSED",
+              "time": "08:32:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Ekeberg (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Ekeberg (Karlskrona kn)@X=15619468@Y=56198609@U=1@L=740031789@",
+              "extId": "740031789",
+              "lon": 15.619468,
+              "lat": 56.198609,
+              "routeIdx": 13,
+              "prognosisType": "PROGNOSED",
+              "time": "08:35:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT2M"
+            },
+            "Notes": {
+              "Note": [
+                {
+                  "value": "Lag 2015:953 tillämpas",
+                  "key": "EG",
+                  "type": "A",
+                  "priority": 0,
+                  "routeIdxFrom": 9,
+                  "routeIdxTo": 13,
+                  "txtN": "Lag 2015:953 tillämpas"
+                }
+              ]
+            },
+            "JourneyDetailRef": {
+              "ref": "1|38864|0|1|9112026"
+            },
+            "JourneyStatus": "P",
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 4",
+                "internalName": "Länstrafik buss 4",
+                "displayNumber": "4",
+                "num": "4",
+                "line": "4",
+                "lineId": "100000002004000001-4",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "matchId": "4;2004;29"
+              },
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 4",
+                "internalName": "Länstrafik buss 4",
+                "displayNumber": "4",
+                "num": "4",
+                "line": "4",
+                "lineId": "100000002004000001-4",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "routeIdxFrom": 9,
+                "routeIdxTo": 13,
+                "matchId": "4;2004;29"
+              }
+            ],
+            "JourneyDetail": {
+              "ref": "1|38864|0|1|9112026",
+              "dayOfOperation": "2026-11-09"
+            },
+            "id": "0",
+            "idx": 0,
+            "name": "Länstrafik buss 4",
+            "number": "4",
+            "category": "BLT",
+            "type": "JNY",
+            "reachable": true,
+            "waitingState": "UNDEF",
+            "direction": "Karlskrona centrum",
+            "directionFlag": "1",
+            "duration": "PT3M",
+            "minimumChangeDuration": "PT2M"
+          },
+          {
+            "Origin": {
+              "name": "Ekeberg (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Ekeberg (Karlskrona kn)@X=15619468@Y=56198609@U=1@L=740031789@",
+              "extId": "740031789",
+              "lon": 15.619468,
+              "lat": 56.198609,
+              "routeIdx": 24,
+              "prognosisType": "PROGNOSED",
+              "time": "08:46:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT2M"
+            },
+            "Destination": {
+              "name": "Karlskrona Amiralen",
+              "type": "ST",
+              "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+              "extId": "740031800",
+              "lon": 15.644458,
+              "lat": 56.197287,
+              "routeIdx": 29,
+              "prognosisType": "PROGNOSED",
+              "time": "08:53:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT3M"
+            },
+            "Notes": {
+              "Note": [
+                {
+                  "value": "Lag 2015:953 tillämpas",
+                  "key": "EG",
+                  "type": "A",
+                  "priority": 0,
+                  "routeIdxFrom": 24,
+                  "routeIdxTo": 29,
+                  "txtN": "Lag 2015:953 tillämpas"
+                }
+              ]
+            },
+            "JourneyDetailRef": {
+              "ref": "1|34790|3|1|9112026"
+            },
+            "JourneyStatus": "P",
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "matchId": "1;1;34"
+              },
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "routeIdxFrom": 24,
+                "routeIdxTo": 29,
+                "matchId": "1;1;34"
+              }
+            ],
+            "JourneyDetail": {
+              "ref": "1|34790|3|1|9112026",
+              "dayOfOperation": "2026-11-09"
+            },
+            "id": "1",
+            "idx": 1,
+            "name": "Länstrafik buss 1",
+            "number": "1",
+            "category": "BLT",
+            "type": "JNY",
+            "reachable": true,
+            "waitingState": "UNDEF",
+            "direction": "Lyckeby Slottsbacken (Karlskrona kn)",
+            "directionFlag": "2",
+            "duration": "PT7M"
+          }
+        ]
+      },
+      "calculation": "INITIAL",
+      "TripStatus": {
+        "convenient": true,
+        "hintCode": 460
+      },
+      "idx": 4,
+      "tripId": "C-4",
+      "ctxRecon": "¶HKI¶T$A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@$A=1@O=Ekeberg (Karlskrona kn)@L=740031789@a=128@$202611090832$202611090835$BLT    4$$1$$$$$$§T$A=1@O=Ekeberg (Karlskrona kn)@L=740031789@a=128@$A=1@O=Karlskrona Amiralen@L=740031800@a=128@$202611090846$202611090853$BLT    1$$1$$$$$$¶KC¶#VE#2#CF#100#CA#0#CM#0#SICT#0#AM#97#AM2#0#RT#4#¶KRCC¶#VE#1#",
+      "duration": "PT21M",
+      "rtDuration": "PT21M",
+      "checksum": "d58a16e9_3",
+      "transferCount": 1
+    },
+    {
+      "Origin": {
+        "name": "Torskors (Karlskrona kn)",
+        "type": "ST",
+        "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+        "extId": "740011646",
+        "lon": 15.63359,
+        "lat": 56.210789,
+        "time": "08:36:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT26M"
+      },
+      "Destination": {
+        "name": "Karlskrona Amiralen",
+        "type": "ST",
+        "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+        "extId": "740031800",
+        "lon": 15.644458,
+        "lat": 56.197287,
+        "routeIdx": 29,
+        "prognosisType": "PROGNOSED",
+        "time": "08:53:00",
+        "date": "2026-11-09",
+        "minimumChangeDuration": "PT3M"
+      },
+      "ServiceDays": [
+        {
+          "planningPeriodBegin": "2026-11-03",
+          "planningPeriodEnd": "2027-11-03",
+          "sDaysR": "inte varje dag",
+          "sDaysI": "9. nov 2026 t o m 1. feb 2027 mån - fre; utom 24., 25., 31. dec, 1., 6. jan",
+          "sDaysB": "F3E7CF9F3E7CE1C367CF9F2000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "LegList": {
+        "Leg": [
+          {
+            "Origin": {
+              "name": "Torskors (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Torskors (Karlskrona kn)@X=15633590@Y=56210789@U=1@L=740011646@",
+              "extId": "740011646",
+              "lon": 15.63359,
+              "lat": 56.210789,
+              "time": "08:36:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Backabo (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Backabo (Karlskrona kn)@X=15629050@Y=56203022@U=1@L=740031791@",
+              "extId": "740031791",
+              "lon": 15.62905,
+              "lat": 56.203022,
+              "time": "08:47:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "GisRef": {
+              "ref": "G|1|G@F|A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@|A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@|9112026|83600|84700|bf|ft@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§bt@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§tt@0@5000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§||||"
+            },
+            "GisRoute": {
+              "dist": 952,
+              "durS": "PT11M",
+              "dirGeo": 0
+            },
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_walk"
+                },
+                "name": "Promenad",
+                "internalName": "Promenad"
+              }
+            ],
+            "id": "0",
+            "idx": 0,
+            "name": "Promenad",
+            "type": "WALK",
+            "duration": "PT11M",
+            "dist": 952
+          },
+          {
+            "Origin": {
+              "name": "Backabo (Karlskrona kn)",
+              "type": "ST",
+              "id": "A=1@O=Backabo (Karlskrona kn)@X=15629050@Y=56203022@U=1@L=740031791@",
+              "extId": "740031791",
+              "lon": 15.62905,
+              "lat": 56.203022,
+              "routeIdx": 26,
+              "prognosisType": "PROGNOSED",
+              "time": "08:47:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT26M"
+            },
+            "Destination": {
+              "name": "Karlskrona Amiralen",
+              "type": "ST",
+              "id": "A=1@O=Karlskrona Amiralen@X=15644458@Y=56197287@U=1@L=740031800@",
+              "extId": "740031800",
+              "lon": 15.644458,
+              "lat": 56.197287,
+              "routeIdx": 29,
+              "prognosisType": "PROGNOSED",
+              "time": "08:53:00",
+              "date": "2026-11-09",
+              "minimumChangeDuration": "PT3M"
+            },
+            "Notes": {
+              "Note": [
+                {
+                  "value": "Lag 2015:953 tillämpas",
+                  "key": "EG",
+                  "type": "A",
+                  "priority": 0,
+                  "routeIdxFrom": 26,
+                  "routeIdxTo": 29,
+                  "txtN": "Lag 2015:953 tillämpas"
+                }
+              ]
+            },
+            "JourneyDetailRef": {
+              "ref": "1|34790|3|1|9112026"
+            },
+            "JourneyStatus": "P",
+            "Product": [
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "matchId": "1;1;34"
+              },
+              {
+                "icon": {
+                  "res": "prod_gen"
+                },
+                "operatorInfo": {
+                  "name": "Blekingetrafiken",
+                  "nameS": "258",
+                  "nameN": "258",
+                  "nameL": "Blekingetrafiken",
+                  "id": "258"
+                },
+                "name": "Länstrafik buss 1",
+                "internalName": "Länstrafik buss 1",
+                "displayNumber": "1",
+                "num": "1",
+                "line": "1",
+                "lineId": "100000000001000001-1",
+                "catOut": "BLT",
+                "catIn": "BLT",
+                "catCode": "7",
+                "cls": "128",
+                "catOutS": "BLT",
+                "catOutL": "Länstrafik buss",
+                "operatorCode": "258",
+                "operator": "Blekingetrafiken",
+                "admin": "258258",
+                "routeIdxFrom": 26,
+                "routeIdxTo": 29,
+                "matchId": "1;1;34"
+              }
+            ],
+            "JourneyDetail": {
+              "ref": "1|34790|3|1|9112026",
+              "dayOfOperation": "2026-11-09"
+            },
+            "id": "1",
+            "idx": 1,
+            "name": "Länstrafik buss 1",
+            "number": "1",
+            "category": "BLT",
+            "type": "JNY",
+            "reachable": true,
+            "waitingState": "UNDEF",
+            "direction": "Lyckeby Slottsbacken (Karlskrona kn)",
+            "directionFlag": "2",
+            "duration": "PT6M"
+          }
+        ]
+      },
+      "calculation": "INITIAL",
+      "TripStatus": {
+        "hintCode": 0,
+        "unsharp": true
+      },
+      "idx": 5,
+      "tripId": "C-5",
+      "ctxRecon": "¶HKI¶G@F$A=1@O=Torskors (Karlskrona kn)@L=740011646@a=128@$A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@$202611090836$202611090847$$$1$$$$$$§T$A=1@O=Backabo (Karlskrona kn)@L=740031791@a=128@$A=1@O=Karlskrona Amiralen@L=740031800@a=128@$202611090847$202611090853$BLT    1$$1$$$$$$¶GP¶ft@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§bt@0@2000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§tt@0@5000@120@1@100@1@0@0@@@@@false@0@-1@0@-1@-1@$f@$f@$f@$f@$f@$§¶KC¶#VE#2#CF#100#CA#0#CM#0#SICT#0#AM#97#AM2#0#RT#4#¶KRCC¶#VE#1#",
+      "duration": "PT17M",
+      "rtDuration": "PT17M",
+      "checksum": "ac487964_3"
+    }
+  ],
+  "ResultStatus": {
+    "timeDiffCritical": false
+  },
+  "TechnicalMessages": {
+    "TechnicalMessage": [
+      {
+        "value": "2026-11-07 02:42:13",
+        "key": "requestTime"
+      },
+      {
+        "value": "ttp=17109#17474 plancode0=ydwhl planid=1793998631 planid0=1793998631 planid_adr=1479298166 plancode_adr=q0r10 srvv=5.45.SAMTRAFIKEN.15.0.1 (customer/hcusamtrafiken/release/2023.10.0) [2023-10-19] tlibv=TRFVER: rel/pproxy/4.00.0 2022-10-24 18:24:51 +0200 Relay_EnrichmentProxy v1 jno=1",
+        "key": "backendInfo"
+      }
+    ]
+  },
+  "serverVersion": "2.45.1",
+  "dialectVersion": "2.45",
+  "planRtTs": "1970-01-01T01:00:00.000+01:00",
+  "requestId": "etianxegw2ku94wx",
+  "scrB": "3|OB|MTµ14µ12006µ12006µ12023µ12023µ0µ0µ365µ12000µ1µ0µ1506µ0µ0µ-2147483648µ1µ2|PDHµ5ca33a1e815904f07d520252b962343b|RDµ9112026|RTµ80000|USµ1|RSµINIT",
+  "scrF": "3|OF|MTµ14µ12036µ12036µ12053µ12053µ0µ0µ365µ12027µ6µ0µ1506µ0µ0µ-2147483648µ1µ2|PDHµ5ca33a1e815904f07d520252b962343b|RDµ9112026|RTµ80000|USµ1|RSµINIT"
+}

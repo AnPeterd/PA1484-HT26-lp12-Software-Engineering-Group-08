@@ -36,13 +36,16 @@ public:
 class StopData {
 private:
     String name;
+    String stopId;
     Departure departures[5] = {};
     int count = 0;
 
 public:
-    StopData(const String& stopName) : name{stopName}{}
+    StopData(const String& stopName, const String& stopIdV) : name{stopName}, stopId{stopIdV} {}
 
     const String& getName() const { return name; }
+
+    const String& getStopId() const { return stopId; }
 
     int getCount() const { return count; }
 
