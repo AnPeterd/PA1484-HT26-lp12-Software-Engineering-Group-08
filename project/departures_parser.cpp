@@ -60,16 +60,18 @@ bool parseDepartures(Stream& input, ParsedStopData& result, const String& select
         bool hasRealtime = departure["is_realtime"] | false;
         bool usingRealtime = false;
 
-        if (hasRealtime &&
-            departure["realtime"].is<const char*>()) {
-            String realtime =
-                departure["realtime"].as<const char*>();
+        if (hasRealtime && departure["realtime"].is<const char*>()) {
+            String realtime = departure["realtime"].as<const char*>();
 
             if (!realtime.isEmpty()) {
                 time = realtime;
                 usingRealtime = true;
             }
         }
+
+        int timeSeparator = time.indexOf('T');
+        if(timeSeparator < 0 || time.length() < timeSeparator + 9){ return false; }
+        time = time.substring(timeSeparator+1, timeSeparator+9)
 
         String status = "Status unknown";
 
