@@ -583,15 +583,20 @@ void applySettings()
 
 void restoreSettings()
 {
-    selectStop(0);
-    ui_set_current_stop(currentStop.name);
-    lv_dropdown_set_selected(dropdown_stops, 0);
+    /*Old version, restoring to Campus Grasvik and All transport types*/
+    // selectStop(0);
+    // ui_set_current_stop(currentStop.name);
+    
+    // //current_transport_type = DEFAULT_TRANSPORT;
+    // ui_set_current_transport(DEFAULT_TRANSPORT);
+    
+    // lv_dropdown_set_selected(dropdown_stops, 0);
+    // lv_dropdown_set_selected(dropdown_transport, 0);
 
-    //current_transport_type = DEFAULT_TRANSPORT;
-    ui_set_current_transport(DEFAULT_TRANSPORT);
-    lv_dropdown_set_selected(dropdown_transport, 0);
+    // applySettings();
 
-    applySettings();
+    /*Restore settings from build-in memory*/
+    loadSettings();
     
     return;
 }
@@ -608,15 +613,20 @@ void loadSettings()
     uint32_t latestStop = saved_settings.loadUInt("latestStop", 0);
     uint32_t latestTransport = saved_settings.loadUInt("latestTransport", 0);
 
+    if (latestStop >= 5) {
+        latestStop = 0;
+    }
     selectStop(latestStop);
     ui_set_current_stop(currentStop.name);
-    lv_dropdown_set_selected(dropdown_stops, latestStop);
-    
-    if (latestTransport > 4 || latestTransport < -1) {
+
+    if (latestTransport >= 4) {
         latestTransport = 0;
     }
     // current_transport_type = labels[latestTransport];
     ui_set_current_transport(labels[latestTransport]);
+    lv_dropdown_set_selected(dropdown_transport, latestTransport);
+
+    lv_dropdown_set_selected(dropdown_stops, latestStop);
     lv_dropdown_set_selected(dropdown_transport, latestTransport);
 
     applySettings();
