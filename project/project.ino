@@ -595,7 +595,7 @@ void restoreSettings()
 
     // applySettings();
 
-    /*Restore settings from build-in memory*/
+    /*Restore settings from built-in memory*/
     loadSettings();
     
     return;
@@ -624,7 +624,6 @@ void loadSettings()
     }
     // current_transport_type = labels[latestTransport];
     ui_set_current_transport(labels[latestTransport]);
-    lv_dropdown_set_selected(dropdown_transport, latestTransport);
 
     lv_dropdown_set_selected(dropdown_stops, latestStop);
     lv_dropdown_set_selected(dropdown_transport, latestTransport);
