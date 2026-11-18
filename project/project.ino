@@ -212,6 +212,7 @@ static void create_departure_table(lv_obj_t* parent) {
     lv_obj_align(btn_refresh, LV_ALIGN_TOP_RIGHT, -5, -45);
 
     dep_table = lv_table_create(dep_list_container);
+    lv_obj_set_style_text_font(dep_table, &montserrat_swedish_14, LV_PART_ITEMS);
     lv_obj_set_size(dep_table, 380, 280);
 
     lv_table_set_row_cnt(dep_table, 6); // 1 header row + 5 departure rows
@@ -339,7 +340,7 @@ static void create_ui()
     // should show a table (eg. 10 row and column) over all the stops on that departure where the last stop is the destination.
 
     // TEST label for Swedish characters
-    lv_obj_t *test_label = lv_label_create(lv_scr_act());
+    lv_obj_t *test_label = lv_label_create(t_journey);
     lv_label_set_text( test_label, "Svenska: å ä ö Å Ä Ö");
 
     lv_obj_set_style_text_font( test_label, &montserrat_swedish_14, 0 );
@@ -386,13 +387,18 @@ static void create_ui()
     lv_obj_set_style_text_font(lbl_live_status, &lv_font_montserrat_14, 0);
     lv_obj_align(lbl_live_status, LV_ALIGN_TOP_MID, 0, 55);
 
-    // Dropdown for bus stops
-    lv_obj_t *stops = lv_label_create(t_settings);
-    lv_label_set_text(stops, "Campus Gräsvik\nKarlskrona Centralstation\nKarlskrona centrum\nKungsplan\nBergåsa station");
-    lv_obj_set_style_text_font(stops, &montserrat_swedish_14, 0);
-
     dropdown_stops = lv_dropdown_create(t_settings);
-    lv_dropdown_set_options(dropdown_stops, lv_label_get_text(stops));
+    lv_obj_set_style_text_font(dropdown_stops, &montserrat_swedish_14, LV_PART_MAIN);
+    lv_obj_set_style_text_font(lv_dropdown_get_list(dropdown_stops),&montserrat_swedish_14,LV_PART_MAIN);
+    
+    String options = "";
+
+    for (size_t i = 0; i < STOP_COUNT; i++) {
+        if (i > 0) options += "\n";
+        options += STOPS[i].name;
+    }
+
+    lv_dropdown_set_options(dropdown_stops, options.c_str());
     lv_obj_set_size(dropdown_stops, 230, 55);
     lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -35);
 
@@ -447,7 +453,7 @@ void ui_update_departure_table(const StopData *stopData) {
     lv_label_set_text(lbl_stopLabel, stopLabel);
 
     ui_update_live_status_display("Live Data: Active (Trafiklab)"); // Update live status
-
+    
     for (int i = 0; i < stopData->getCount() && i < 5; i++) {
         const Departure* departure = stopData->getDeparture(i);
         int rowIndex = i + 1;
@@ -463,7 +469,7 @@ void ui_update_departure_table(const StopData *stopData) {
         // Uppdatera current_transport_type med transporttypen från avgången
 
         if (departure != nullptr) {
-            Serial.println(departure->getTransportMode().c_str());
+            //Serial.println(departure->getTransportMode().c_str());
             std::string timeStatus = std::string(departure->getTime().c_str()) + " - " + (departure->getStatus().c_str());
 
             lv_table_set_cell_value( dep_table, rowIndex, 0, timeStatus.c_str() );
@@ -617,11 +623,12 @@ void loadSettings()
         latestStop = 0;
     }
     selectStop(latestStop);
+    if (latestStop >= 5) {latestStop = 0;}
     ui_set_current_stop(currentStop.name);
+    lv_dropdown_set_selected(dropdown_stops, latestStop);
+    
+    if (latestTransport >= 4) {latestTransport = 0;}
 
-    if (latestTransport >= 4) {
-        latestTransport = 0;
-    }
     // current_transport_type = labels[latestTransport];
     ui_set_current_transport(labels[latestTransport]);
 
@@ -721,7 +728,7 @@ lv_timer_handler();
                 //Avaliable stops
                 uint16_t index = lv_dropdown_get_selected(dropdown_stops); //get stop index from dropdown
                 
-                if (index < 5 && selectStop(index))
+                if (index < STOP_COUNT && selectStop(index))
                 {
                     //Changing current stop data
                     ui_set_current_stop(currentStop.name);
@@ -748,7 +755,6 @@ lv_timer_handler();
                 {
                     //Changing current transport type data
                     ui_set_current_transport(labels[index]);
-
                     applySettings();
                 }
 
