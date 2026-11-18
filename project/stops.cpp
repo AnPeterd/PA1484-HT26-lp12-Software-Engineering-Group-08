@@ -10,7 +10,7 @@ const Stop STOPS[] = {
     {"Torskors", "740011646"},
     {"NKT Arena Karlskrona", "740032192"},
     {"Lyckeby centrum", "740000663"},
-    {"Sjukhuset huvudentrén", "740024365"}
+    {"Sjukhuset huvudentren", "740024365"}
 };
 
 const size_t STOP_COUNT = sizeof(STOPS) / sizeof(STOPS[0]);
