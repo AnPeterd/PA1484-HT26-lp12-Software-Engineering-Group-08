@@ -1,22 +1,27 @@
 #include "HTTP.hpp"
 #include "secrets.h"
+#include "departure_parser.hpp"
 
-
-int8_t request_send(String stop_id)
+int8_t request_send (String url, StopData& result, const String& transport, StopData& result_route, int8_t request_type)
 {
-    if (WiFi.status()!= WL_CONNECTED)
+
+  if (WiFi.status()!= WL_CONNECTED)
     {
         Serial.println("No WiFi connection - unable to send request");
         return 6;
     }
 
-    HTTPClient http; 
-
-    String url = String("https://realtime-api.trafiklab.se/v1/departures/") + stop_id + "?key=" + API_KEY; // creation of URL for the upcoming request
     
-    bool begin_result = http.begin(url);
+  HTTPClient http;
 
-    if (begin_result == false) 
+  http.useHTTP10(true); //for smoother stream data - no chunked transfer encoding
+  http.setConnectTimeout(5000);
+  http.setTimeout(10000); //Limiting connection time
+
+  bool begin_result = http.begin(url);
+
+
+  if (begin_result == false) 
     {
         Serial.println ("Request not sent - bad url");
         return 6;
@@ -24,102 +29,55 @@ int8_t request_send(String stop_id)
 
     int http_code = http.GET();
 
-    int8_t short_code = http_code/100;
 
-    switch (short_code)//Error handling and debug info
+    if (http_code != 200) //reworked HTTP faliure logic
     {
-        case (1):
-        Serial.println ("Code 1xx: Informational response (weak TRUE - continues)");
-        Serial.print(http_code);
-        break;
+      Serial.println("Unexpected HTTP error:");
+      Serial.println (http_code);
 
-        case (2):
-        Serial.println("Code 2xx: Success (TRUE)");
-        Serial.print(http_code);
-        break;
+      http.end();
 
-        case (3):
-        Serial.println ("Code 3xx: Redirection (weak TRUE - continues)");
-        Serial.print(http_code);
-        break;
+      if (http_code >= 300 && http_code < 600)
+      {
+        return http_code / 100; //HTTP faliures
+      }
+      else
+      {
+        return 6; //Other faliures
+      }
 
-        case (4):
-        Serial.println("Code 4xx: Client error (strong FALSE - break)");
-        Serial.print(http_code);
-        http.end();
-        return short_code;
-
-        case (5):
-        Serial.println("Code 5xx: Server error (strong FALSE - break)");
-        Serial.print (http_code);
-        http.end();
-        return short_code;
-
-        default:
-        Serial.println("Unexpected HTTP code (strong FALSE - break)");
-        Serial.print(http_code);
-        Serial.print(HTTPClient::errorToString(http_code));
-        http.end();
-        return 6;
     }
 
-    String* response = new String(http.getString()); //THIS IS A BAD WAY TO HANDLE JSON FILES! FOR PRACTICE ONLY!
+    bool parsed = false;
 
-    //The main cincerne is about the memory of the ESP - cheking if there is enough room for further operations
-    Serial.printf("JSON size: %u bytes\n", (*response).length()); 
-    Serial.printf("Free heap before parse: %u \n", ESP.getFreeHeap());
+    if (request_type ==1) //departure type
+    {
+      parsed = parseDepartures(http.getStream(), result, transport);
+    }
 
-    //Parsing function here
+    else if (request_type == 0)
+    {
+      parsed = true; //Parcer function here
+    }
 
-    //Stream& response = http.getStream(); //This is a GOOD way, BUT a function MUST be ready to read from the stream - only working when member C is ready!
+        http.end(); //closing the HTTP connection
 
-    Serial.println(*response);
+    if (!parsed) {
+    Serial.println("Parsing failed");
+    return 7; // parsing faliure 
+    }
 
-    delete response;
-    response = nullptr;
 
-    http.end(); //closing the HTTP connection
-    return short_code;
+    return 2;
 }
 
 
-bool stop_lookup (String user_input) //The API allows to lookup (!!) stops. With proper architecture user will be able lookup his own stops 
+
+int8_t refresh_departures(String stop_id, StopData& result, const String& transport)
 {
-    HTTPClient http;
-    
-    String url = String("https://realtime-api.trafiklab.se/v1/stops/name/") + user_input + "/?key=" + API_KEY;
-
-    http.begin(url);
-
-    int http_code = http.GET();
-
-    int short_code = http_code/100;
-
-    if (short_code >= 4)
-    {
-        Serial.println("HTTP request error");
-        Serial.print(http_code);
-        Serial.print(HTTPClient::errorToString(http_code));
-        return false;
-    }
-
-    // TEMPORARY BLOCK HERE!!!     
-    String response = http.getString(); //THIS IS A BAD WAY TO HANDLE JSON FILES! NEED TO REPLACE! (good enough for now)
-
-    //Stream& response = http.getStream(); //This is a GOOD way, BUT a function MUST be ready to read from the stream - only working when member C is ready!
-    
-    Serial.println(response);
-
-    http.end(); //closing the HTTP connection
-    return true;
-    //END OF TEMPORARY BLOCK!!!
-    
-    
-}
-
-int8_t refresh_departures(String stop_id)
-{
-    int8_t refresh_status = request_send(stop_id);
+  StopData dummy{"", ""};
+  String url = String("https://realtime-api.trafiklab.se/v1/departures/") + stop_id + "?key=" + API_KEY;
+    int8_t refresh_status = request_send(url, result, transport, dummy, 1);
     if (refresh_status >= 3)
     {
       wl_status_t wifi_status = WiFi.status();
@@ -133,11 +91,13 @@ int8_t refresh_departures(String stop_id)
         else
         {
           // Wi-Fi recovered - retry request
-           refresh_status = request_send(stop_id);
+           refresh_status = request_send(url, result, transport, dummy, 1);
            
           // No further recovery attempts are made if the retry fails
         }
       }
+
+      //Rework of HTTP Errors is comming soon
       else
       {
         switch (refresh_status)
@@ -157,9 +117,24 @@ int8_t refresh_departures(String stop_id)
           case 6:
           // transport/network handling
           break;
+
+          case 7:
+          // parsing problem
+          break;
         }
       }
     }
 
     return refresh_status;
+}
+
+
+
+int8_t route_refresh (String start_stop_id, String end_stop_id, StopData& result)
+{
+  StopData dummy{"", ""};//Object used for the irrelevent data type
+  String url = String("https://api.resrobot.se/v2.1/trip?originId=") + start_stop_id + "&destId=" + end_stop_id + "&format=json&numF=3&passlist=0&poly=0&accessId=" + RESROBOT_API_KEY; // creation of URL for the upcoming request
+  int8_t refresh_status = request_send(url, dummy, "ALL", result, 0);
+  return refresh_status;
+
 }

@@ -7,129 +7,81 @@
 #include <LilyGo_AMOLED.h>
 #include <LV_Helper.h>
 #include <lvgl.h>
+#include <string>
 
 #include "secrets.h"
 #include "WiFi.hpp"
 #include "HTTP.hpp"
+#include "TouchInput.hpp"
+
+#include "memory_saver.hpp"
 
 #include "departures.hpp"
 
+// Swedish font
+LV_FONT_DECLARE(montserrat_swedish_14);
+
+#include <iostream>
+#include <algorithm>
 
 
-// Data structures to hold departure information
-// DepartureItem: Lagrar info om en enskild avgång (tid, linje, destination, status).
-struct DepartureItem {
-    char time[16];
-    char line[16];
-    char destination[64];
-    char status[32];
-};
 
-
-// StopData: Lagrar hållplatsens namn och lista med avgångar (DepartureItem). count anger hur många avgångar som finns i listan.
-struct StopData {
-    char stopName[64];
-    char transportType[32];
-    DepartureItem departures[5];    // för tillfället max 5 avgångar, kan ändras senare
-    int count;
-};
-
+MemorySaver saved_settings;
 
 static lv_obj_t* tileview;
 static lv_obj_t* t_start;
+static lv_obj_t* t_journey;
 static lv_obj_t* t_departures;
 static lv_obj_t* t_settings;
 
 static lv_obj_t *dep_list_container = NULL;
 static lv_obj_t *dep_table = NULL;
-static lv_obj_t *lbl_current_stop = NULL;
-static lv_obj_t *lbl_current_transport = NULL;
+
+static lv_obj_t *lbl_stopLabel = NULL;
+
 static lv_obj_t *dropdown_stops = NULL;
 static lv_obj_t *dropdown_transport = NULL;
 
-// Statusikoner
+static lv_obj_t *btn_set = NULL;
+static lv_obj_t *btn_save = NULL;
+static lv_obj_t *btn_reset = NULL;
+static lv_obj_t *btn_refresh = NULL;
+
+
+// Status icons
 static lv_obj_t *lbl_wifi_status = NULL;
 static lv_obj_t *lbl_live_status = NULL;
 
 const char* DEFAULT_STOP = "Campus Gräsvik";
 const char* DEFAULT_TRANSPORT = "All Transport Types";
 
+std::string current_stop_name = DEFAULT_STOP;
+std::string current_transport_type = DEFAULT_TRANSPORT;
+
+
+// Saved user settings
+std::string saved_stop_name = DEFAULT_STOP;
+std::string saved_transport_type = DEFAULT_TRANSPORT;
+
+// Stores the latest successfully parsed departures for Campus Gräsvik
+StopData currentDepartures{STOPS[0].name, STOPS[0].id};
+
+uint32_t lastRefresh = 0;
+
+
 LilyGo_Class amoled;
 
 
-// Lärarens kod
-/*
-static lv_obj_t* tileview;
-static lv_obj_t* t1;
-static lv_obj_t* t2;
-static lv_obj_t* t1_label;
-static lv_obj_t* t2_label;
-static bool t2_dark = false;  // start tile #2 in light mode
 
-// Function: Tile #2 Color change
-static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
-{
-  // Background
-  lv_obj_set_style_bg_opa(tile, LV_OPA_COVER, 0);
-  lv_obj_set_style_bg_color(tile, dark ? lv_color_black() : lv_color_white(), 0);
-
-  // Text
-  lv_obj_set_style_text_color(label, dark ? lv_color_white() : lv_color_black(), 0);
-}
-
-static void on_tile2_clicked(lv_event_t* e)
-{
-  LV_UNUSED(e);
-  t2_dark = !t2_dark;
-  apply_tile_colors(t2, t2_label, t2_dark);
-}
-
-// Function: Creates UI
-static void create_ui()
-{
-  // Fullscreen Tileview
-  tileview = lv_tileview_create(lv_scr_act());
-  lv_obj_set_size(tileview, lv_disp_get_hor_res(NULL), lv_disp_get_ver_res(NULL));
-  lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
-
-  // Add two horizontal tiles
-  t1 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
-  t2 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
-*/
-  // // Tile #1, Screen1
-  // {
-  //   t1_label = lv_label_create(t1);
-  //   lv_label_set_text(t1_label, "Hello Students");
-  //   lv_obj_set_style_text_font(t1_label, &lv_font_montserrat_28, 0);
-  //   lv_obj_center(t1_label);
-//     apply_tile_colors(t1, t1_label, /*dark=*/false);
-//   }
-
-
-//   // Tile #2, Screen2
-//   {
-//     t2_label = lv_label_create(t2);
-//     lv_label_set_text(t2_label, "Welcome to the workshop");
-//     lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
-//     lv_obj_center(t2_label);
-
-//     apply_tile_colors(t2, t2_label, /*dark=*/false);
-//     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
-//     lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
-//   }
-// }
-// 
-
-
-// Funktion som sätter unik demodata baserat på både hållplats och transporttyp
+// function that sets unic demodata based on both stop and transport type
 void ui_load_demo_data(const char* stopName, const char* transportType) {
-    if (!dep_table || !lbl_current_stop) return;
+    if (!dep_table || current_stop_name.empty()) return;
 
     char stopLabel[128];
     snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopName, transportType);
-    lv_label_set_text(lbl_current_stop, stopLabel);
+    lv_label_set_text(lbl_stopLabel, stopLabel);
 
-    // Nollställer tabellen först så att den är tom om inga avgångar matchar
+    // Reset the table first so that it is empty if no departures match
     for (int r = 1; r <= 4; r++) {
         lv_table_set_cell_value(dep_table, r, 0, "--:--");
         lv_table_set_cell_value(dep_table, r, 1, "-");
@@ -213,13 +165,32 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
             currentRow++;
         }
     }
+} // ^FOR DEMODATA; NOT LIVE DATA^
+
+
+// declared some functions.
+
+void ui_apply_user_settings(const char* selectedStop, const char* selectedTransport);
+void ui_update_departure_table(const StopData *stopData);
+void ui_update_wifi_status_display(const char* statusText);
+void ui_update_live_status_display(const char* statusText);
+
+
+
+static lv_obj_t *add_refresh_button(lv_obj_t *parent) {
+    lv_obj_t *btn_refresh = lv_btn_create(parent);
+    lv_obj_set_size(btn_refresh, 40, 40);
+
+    lv_obj_t *lbl_ref_icon = lv_label_create(btn_refresh);
+    lv_label_set_text(lbl_ref_icon, LV_SYMBOL_REFRESH);
+    lv_obj_center(lbl_ref_icon);
+
+    return btn_refresh;
 }
 
-
-
-// Hjälpfunktion för att lägga till Settings-knappen på skärm
+// function for placing Settings-btn on screen
 static void add_settings_button(lv_obj_t *parent) {
-    lv_obj_t *btn_set = lv_btn_create(parent);
+    btn_set = lv_btn_create(parent);
     lv_obj_set_size(btn_set, 90, 50);
     lv_obj_align(btn_set, LV_ALIGN_TOP_RIGHT, -10, 10);
     lv_obj_t *lbl_s = lv_label_create(btn_set);
@@ -227,21 +198,111 @@ static void add_settings_button(lv_obj_t *parent) {
     lv_obj_center(lbl_s);
 }
 
+static void create_departure_table(lv_obj_t* parent) {
+    // Container for dep.table
+    dep_list_container = lv_obj_create(parent);
 
-// Funktion: Skapar UI med inbyggd swiping via Tileview
+    lv_obj_set_size(dep_list_container, 400, 300);
+    lv_obj_align(dep_list_container, LV_ALIGN_CENTER, 0, 15);
+    lv_obj_set_flex_flow(dep_list_container, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_scrollbar_mode(dep_list_container, LV_SCROLLBAR_MODE_AUTO);
+
+    // Refresh btn
+    btn_refresh = add_refresh_button(dep_list_container);
+    lv_obj_align(btn_refresh, LV_ALIGN_TOP_RIGHT, -5, -45);
+
+    dep_table = lv_table_create(dep_list_container);
+    lv_obj_set_style_text_font(dep_table, &montserrat_swedish_14, LV_PART_ITEMS);
+    lv_obj_set_size(dep_table, 380, 280);
+
+    lv_table_set_row_cnt(dep_table, 6); // 1 header row + 5 departure rows
+   
+    // Column-width
+    lv_table_set_col_width(dep_table, 0, 110);   // Time
+    lv_table_set_col_width(dep_table, 1, 80);   // Line
+    lv_table_set_col_width(dep_table, 2, 190);  // Destination
+
+    // Header row
+    lv_table_set_cell_value(dep_table, 0, 0, "Time");
+    lv_table_set_cell_value(dep_table, 0, 1, "Line");
+    lv_table_set_cell_value(dep_table, 0, 2, "Destination");
+
+}
+
+
+
+
+static lv_obj_t *add_stop_label(lv_obj_t *parent, const char* stopName, const char* transportType) {
+    lbl_stopLabel = lv_label_create(parent);
+
+    char initStopLabel[128];
+    snprintf(initStopLabel, sizeof(initStopLabel), "Stop: %s [%s]", stopName, transportType);
+    lv_label_set_text(lbl_stopLabel, initStopLabel);
+    lv_obj_set_style_text_font(lbl_stopLabel, &montserrat_swedish_14, 0);
+    
+    return lbl_stopLabel;
+}
+
+void ui_update_stop_label(const char* stopName, const char* transportType)
+{
+    if (lbl_stopLabel == nullptr || stopName == nullptr || transportType == nullptr) { return; }
+
+    char text[128];
+
+    snprintf(text, sizeof(text), "Stop: %s [%s]", stopName, transportType);
+
+    lv_label_set_text(lbl_stopLabel, text);
+    lv_obj_set_style_text_font(lbl_stopLabel, &montserrat_swedish_14, 0);
+}
+
+
+void ui_set_current_stop(const char* stopName)
+{
+    if (stopName == nullptr) { return; }
+
+    current_stop_name = stopName;
+
+    ui_update_stop_label( current_stop_name.c_str(), current_transport_type.c_str() );
+
+    // TODO: Uppdatering av avgångstabellen. Här behövs StopData-objektet som innehåller avgångarna för den valda hållplatsen.
+    // för att: update_departure_table(stopData);
+
+
+}
+
+
+void ui_set_current_transport(const char* transportType)
+{
+    if (transportType == nullptr) {
+        return;
+    }
+
+    current_transport_type = transportType;
+
+    ui_update_stop_label(current_stop_name.c_str(), current_transport_type.c_str());
+
+    // TODO: Uppdatering av avgångstabellen. Här behövs StopData-objektet som innehåller avgångarna för den valda hållplatsen (current_stop_name).
+    // för att: update_departure_table(stopData);
+}
+
+
+
+// Function to create the UI
 static void create_ui()
 {
-  // Fullscreen Tileview (Skapar ytan som hanterar swiping)
+  // Fullscreen Tileview (tiles for swiping)
   tileview = lv_tileview_create(lv_scr_act());
   lv_obj_set_size(tileview, lv_disp_get_hor_res(NULL), lv_disp_get_ver_res(NULL));
   lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
 
-  // Lägg till 3 horisontella tiles efter varandra (Kolonn 0, 1 och 2)
-  t_start      = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR); // Skärm 1: Start
-  t_departures = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR); // Skärm 2: Avgångar
-  t_settings   = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR); // Skärm 3: Inställningar
+  // horisontal tiles (Kolonn 0, 1 och 2) 
+  t_start      = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR); // Tile 0: start
+  t_journey    = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR); // Tile 1: Journey
+  t_departures = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR); // Tile 2: departures
+  t_settings   = lv_tileview_add_tile(tileview, 3, 0, LV_DIR_HOR); // Tile 3: settings
 
-  
+
+
   // --- 1. START SCREEN (Tile 0) ---
   {
 
@@ -252,7 +313,7 @@ static void create_ui()
     lv_obj_t *lbl_info = lv_label_create(t_start);
     char buffer[256];
     snprintf(buffer, sizeof(buffer), 
-             "Version: 1.0.0\n\n"
+             "Version: 1.5.0\n\n"
              "Group 08\n\n"
              "- Andrej Petterson\n"
              "- Baqir Ibrahim\n"
@@ -263,68 +324,53 @@ static void create_ui()
     lv_obj_align(lbl_info, LV_ALIGN_CENTER, 0, 15);
 
     lv_obj_t *hint = lv_label_create(t_start);
-    lv_label_set_text(hint, "<- Swipe to navigate ->");
+    lv_label_set_text(hint, "Swipe to navigate ->");
     lv_obj_set_style_text_font(hint, &lv_font_montserrat_28, 0);
     lv_obj_align(hint, LV_ALIGN_BOTTOM_MID, 0, -10);
   }
 
+
+  // --- 2. JOURNEY SCREEN (Tile 1) ---
+  {
+    lv_obj_t *title = lv_label_create(t_journey);
+    lv_label_set_text(title, "Journey");
+    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
+
+    // Coming soon US 5.1: Dropdown for stops and destinations? , when clicked - 
+    // should show a table (eg. 10 row and column) over all the stops on that departure where the last stop is the destination.
+
+    // TEST label for Swedish characters
+    lv_obj_t *test_label = lv_label_create(t_journey);
+    lv_label_set_text( test_label, "Svenska: å ä ö Å Ä Ö");
+
+    lv_obj_set_style_text_font( test_label, &montserrat_swedish_14, 0 );
+    lv_obj_align( test_label, LV_ALIGN_CENTER, 0, 0 );
+
+    
+    // contents
+  }
+
   
-  // --- 2. DEPARTURES SCREEN (Tile 1) ---
+  // --- 3. DEPARTURES SCREEN (Tile 2) ---
   {
     add_settings_button(t_departures);
-
-    // Standard Demodata: kan ändras dynamiskt baserat på användarens val i inställningarna (dropdown_stops och dropdown_transport)
-    ui_load_demo_data(DEFAULT_STOP, DEFAULT_TRANSPORT);
 
     lv_obj_t *title = lv_label_create(t_departures);
     lv_label_set_text(title, "Departures");
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
 
-    // lbl_current_stop ska ändras dynamiskt baserat på användarens val i inställningarna (dropdown_stops)
-    lbl_current_stop = lv_label_create(t_departures);
-    
-    char initStopLabel[128];
-    snprintf(initStopLabel, sizeof(initStopLabel), "Stop: %s [%s]", DEFAULT_STOP, DEFAULT_TRANSPORT);
-    lv_label_set_text(lbl_current_stop, initStopLabel);
-    
-    lv_obj_align(lbl_current_stop, LV_ALIGN_TOP_MID, 0, 40);
+    // lbl_stopLabel should change dynamically based on users choice in settings (dropdown_stops)
+    lbl_stopLabel = add_stop_label(t_departures, DEFAULT_STOP, DEFAULT_TRANSPORT);
+    lv_obj_align(lbl_stopLabel, LV_ALIGN_TOP_MID, 0, 40);
 
-    dep_list_container = lv_obj_create(t_departures);
-    lv_obj_set_size(dep_list_container, 400, 300);
-    lv_obj_align(dep_list_container, LV_ALIGN_CENTER, 0, 15);
-    lv_obj_set_flex_flow(dep_list_container, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_scrollbar_mode(dep_list_container, LV_SCROLLBAR_MODE_AUTO); // Activates scrolling when necessary
+    create_departure_table(t_departures);
 
-    // Refresh button in the container
-    lv_obj_t *btn_refresh = lv_btn_create(dep_list_container);
-    lv_obj_set_size(btn_refresh, 40, 40);
-    lv_obj_align(btn_refresh, LV_ALIGN_TOP_RIGHT, -5, -45);
-
-    lv_obj_t *lbl_ref_icon = lv_label_create(btn_refresh);
-    lv_label_set_text(lbl_ref_icon, LV_SYMBOL_REFRESH);
-    lv_obj_center(lbl_ref_icon);
-
-
-    // Table in the container
-    dep_table = lv_table_create(dep_list_container);
-    lv_obj_set_size(dep_table, 380, 280);
-
-    lv_table_set_row_cnt(dep_table, 6); // 1 header row + 5 departure rows
-    lv_table_set_col_cnt(dep_table, 3);
-    lv_table_set_col_width(dep_table, 0, 80);   // Time
-    lv_table_set_col_width(dep_table, 1, 80);   // Line
-    lv_table_set_col_width(dep_table, 2, 220);  // Destination
-
-    // Tabellrubriker
-    lv_table_set_cell_value(dep_table, 0, 0, "Time");
-    lv_table_set_cell_value(dep_table, 0, 1, "Line");
-    lv_table_set_cell_value(dep_table, 0, 2, "Destination");
-
+    // upload data (departures) from here:
 
   }
 
   
-  // --- 3. SETTINGS SCREEN (Tile 2) ---
+  // --- 4. SETTINGS SCREEN (Tile 3) ---
   {
     lv_obj_t *title = lv_label_create(t_settings);
     lv_label_set_text(title, "Settings");
@@ -335,33 +381,42 @@ static void create_ui()
     lv_obj_set_style_text_font(lbl_wifi_status, &lv_font_montserrat_14, 0);
     lv_obj_align(lbl_wifi_status, LV_ALIGN_TOP_MID, 0, 35);
 
-    // Använd ui_update_live_status_display() för att uppdatera denna label med live status från nätverksmodulen
+    // Use ui_update_live_status_display() to update this label with live status from the network module
     lbl_live_status = lv_label_create(t_settings);
     lv_label_set_text(lbl_live_status, "Live Data: Active (Trafiklab)");
     lv_obj_set_style_text_font(lbl_live_status, &lv_font_montserrat_14, 0);
     lv_obj_align(lbl_live_status, LV_ALIGN_TOP_MID, 0, 55);
 
-    // Dropdown för hållplatser
     dropdown_stops = lv_dropdown_create(t_settings);
-    lv_dropdown_set_options(dropdown_stops, "Campus Gräsvik\nKarlskrona Centralstation\nKarlskrona centrum\nKungsplan\nBergåsa station");
+    lv_obj_set_style_text_font(dropdown_stops, &montserrat_swedish_14, LV_PART_MAIN);
+    lv_obj_set_style_text_font(lv_dropdown_get_list(dropdown_stops),&montserrat_swedish_14,LV_PART_MAIN);
+    
+    String options = "";
+
+    for (size_t i = 0; i < STOP_COUNT; i++) {
+        if (i > 0) options += "\n";
+        options += STOPS[i].name;
+    }
+
+    lv_dropdown_set_options(dropdown_stops, options.c_str());
     lv_obj_set_size(dropdown_stops, 230, 55);
     lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -35);
 
-    // Dropdown för transporttyper
+    // Dropdown for transport types
     dropdown_transport = lv_dropdown_create(t_settings);
     lv_dropdown_set_options(dropdown_transport, "All Transport Types\nBus\nTrain\nFerry");
     lv_obj_set_size(dropdown_transport, 230, 55);
     lv_obj_align(dropdown_transport, LV_ALIGN_CENTER, 0, 25);
 
-    // Spara- och återställningsknappar
-    lv_obj_t *btn_save = lv_btn_create(t_settings);
+    // Save and Reset buttons
+    btn_save = lv_btn_create(t_settings);
     lv_obj_set_size(btn_save, 115, 50);
     lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -55, -35);
     lv_obj_t *lbl_save = lv_label_create(btn_save);
     lv_label_set_text(lbl_save, "Save");
     lv_obj_center(lbl_save);
 
-    lv_obj_t *btn_reset = lv_btn_create(t_settings);
+    btn_reset = lv_btn_create(t_settings);
     lv_obj_set_size(btn_reset, 115, 50);
     lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 55, -35);
     lv_obj_t *lbl_reset = lv_label_create(btn_reset);
@@ -377,39 +432,75 @@ static void create_ui()
 
 
 
-// Funktion för att applicera nya användarinställningar (anropas t.ex. vid Save/Reset)
+// For DEMO table (not live data): function to apply new user settings (called e.g. via Save/Reset)
 void ui_apply_user_settings(const char* selectedStop, const char* selectedTransport) {
-    // Ladda om demodatan i tabellen (och uppdatera titeln) med de nya valen
+    // Update the current stop and transport type based on user selection
     ui_load_demo_data(selectedStop, selectedTransport);
 }
 
 
-// Funktion för att uppdatera tabellen med ny data från nätverks-/logikmodulen
+// Function for updating the departure table with new live data from the network/logic module
 void ui_update_departure_table(const StopData *stopData) {
-    if (!dep_table || !lbl_current_stop) return;
+    if ( !stopData || !dep_table && current_stop_name.empty() ) { // controll current_stop_name is not empty
+        ui_update_live_status_display("No Departures");
+        return;   
+    }  
 
-    // Uppdatera titeln med den aktiva hållplatsen (den användaren valt)
+    // Update title with the active stop (the one the user has selected)
     char stopLabel[128];
-    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->stopName, stopData->transportType);
-    lv_label_set_text(lbl_current_stop, stopLabel);
+    // Use c_str() because %s expects a const char* (C-style string)
+    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), current_transport_type.c_str());
+    lv_label_set_text(lbl_stopLabel, stopLabel);
 
-    // Fyll tabellens rader baserat på hur många avgångar som finns (stopData->count)
-    for (int i = 0; i < stopData->count; i++) {
+    ui_update_live_status_display("Live Data: Active (Trafiklab)"); // Update live status
+    
+    for (int i = 0; i < stopData->getCount() && i < 5; i++) {
+        const Departure* departure = stopData->getDeparture(i);
         int rowIndex = i + 1;
-        lv_table_set_cell_value(dep_table, rowIndex, 0, stopData->departures[i].time);
-        lv_table_set_cell_value(dep_table, rowIndex, 1, stopData->departures[i].line);
-        lv_table_set_cell_value(dep_table, rowIndex, 2, stopData->departures[i].destination);
+
+        // bool matches = strcmp(departure->getTransportMode().c_str(), current_transport_type.c_str()) == 0 || strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0;
+
+        // if(!matches) {
+        //     // Om transporttypen inte matchar, hoppa över denna avgång
+        //     continue;
+        // }  
+        
+        // if (departure != nullptr && matches)
+        // Uppdatera current_transport_type med transporttypen från avgången
+
+        if (departure != nullptr) {
+            //Serial.println(departure->getTransportMode().c_str());
+            std::string timeStatus = std::string(departure->getTime().c_str()) + " - " + (departure->getStatus().c_str());
+
+            lv_table_set_cell_value( dep_table, rowIndex, 0, timeStatus.c_str() );
+
+            if ( strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0 ) {
+                String mode_line = departure->getLine() + String(" / ") + departure->getTransportMode();
+                lv_table_set_cell_value( dep_table, rowIndex, 1, mode_line.c_str() );
+            }
+            else {
+                lv_table_set_cell_value( dep_table, rowIndex, 1, departure->getLine().c_str() );
+            }
+
+            lv_table_set_cell_value( dep_table, rowIndex, 2, departure->getDestination().c_str() );
+        }
+
+        else {
+            lv_table_set_cell_value(dep_table, rowIndex, 0, "--:--");
+            lv_table_set_cell_value(dep_table, rowIndex, 1, "-");
+            lv_table_set_cell_value(dep_table, rowIndex, 2, "No departures");
+        }
     }
 }
 
-// Funktion för att uppdatera Wi-Fi status på skärmen
+// Function for updating Wi-Fi status on the screen
 void ui_update_wifi_status_display(const char* statusText) {
     if (lbl_wifi_status) {
         lv_label_set_text(lbl_wifi_status, statusText);
     }
 }
 
-// Funktion för att uppdatera live status på skärmen
+// Function for updating live status on the screen
 void ui_update_live_status_display(const char* statusText) {
     if (lbl_live_status) {
         lv_label_set_text(lbl_live_status, statusText);
@@ -465,7 +556,7 @@ static int8_t connect_wifi()
     ui_update_wifi_status_display("Wi-Fi: Connection Lost");
     return -1;
     default:
-    Serial.println ("Unexpectrd WiFi error:");
+    Serial.println ("Unexpected WiFi error:");
     Serial.println (wifi_status);
     ui_update_wifi_status_display("Wi-Fi: Unexpected Error");
     return 0;
@@ -474,55 +565,223 @@ static int8_t connect_wifi()
 }
 
 
+//Data updating function connected to manual update button and automatic data
+void refreshNow()
+{
+    int8_t status = refresh_departures(currentStop.id, currentDepartures, String(current_transport_type.c_str()));
+
+    if (status == 2)
+        ui_update_departure_table(&currentDepartures);
+    else
+        ui_update_live_status_display("Update failed");
+
+    lastRefresh = millis();
+}
+
+void applySettings()
+{
+    currentDepartures = StopData{currentStop.name,currentStop.id};
+    ui_update_departure_table(&currentDepartures);
+    refreshNow();
+    
+    return;
+}
+
+void restoreSettings()
+{
+    /*Old version, restoring to Campus Grasvik and All transport types*/
+    // selectStop(0);
+    // ui_set_current_stop(currentStop.name);
+    
+    // //current_transport_type = DEFAULT_TRANSPORT;
+    // ui_set_current_transport(DEFAULT_TRANSPORT);
+    
+    // lv_dropdown_set_selected(dropdown_stops, 0);
+    // lv_dropdown_set_selected(dropdown_transport, 0);
+
+    // applySettings();
+
+    /*Restore settings from built-in memory*/
+    loadSettings();
+    
+    return;
+}
+
+void loadSettings()
+{
+    const char* labels[] = {
+        "All Transport Types",
+        "Bus",
+        "Train",
+        "Ferry"
+    };
+
+    uint32_t latestStop = saved_settings.loadUInt("latestStop", 0);
+    uint32_t latestTransport = saved_settings.loadUInt("latestTransport", 0);
+
+    if (latestStop >= 5) {
+        latestStop = 0;
+    }
+    selectStop(latestStop);
+    if (latestStop >= 5) {latestStop = 0;}
+    ui_set_current_stop(currentStop.name);
+    lv_dropdown_set_selected(dropdown_stops, latestStop);
+    
+    if (latestTransport >= 4) {latestTransport = 0;}
+
+    // current_transport_type = labels[latestTransport];
+    ui_set_current_transport(labels[latestTransport]);
+
+    lv_dropdown_set_selected(dropdown_stops, latestStop);
+    lv_dropdown_set_selected(dropdown_transport, latestTransport);
+
+    applySettings();
+    
+    return;
+}
+
+void saveSettings()
+{
+    saved_settings.saveUInt("latestStop", lv_dropdown_get_selected(dropdown_stops));
+    saved_settings.saveUInt("latestTransport", lv_dropdown_get_selected(dropdown_transport));
+    
+    return;
+}
+
+
 // Must have function: Setup is run once on startup
 void setup()
 {
-  Serial.begin(115200);
-  delay(200);
+    Serial.begin(115200);
+    delay(1000);
 
-  if (!amoled.begin()) {
-    Serial.println("Failed to init LilyGO AMOLED.");
-    while (true) delay(1000);
-  }
+    if (!saved_settings.begin()) {    // open map with settings
+        Serial.println("Failed to init Saved Settings");
+    }
+    
+    if (!amoled.begin()) {
+        Serial.println("Failed to init LilyGO AMOLED.");
+        while (true) delay(1000);
+    }
+        
+    beginLvglHelper(amoled);   // init LVGL for this board
+        
+    create_ui();
+    touch_input_init(
+        btn_set,
+        btn_save,
+        btn_reset,
+        btn_refresh,
+        dropdown_stops,
+        dropdown_transport
+    );
+        
+    
+    int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
+    
+    loadSettings();
+    
+    // Testing requests
+    // int8_t request_result = 6;
+    
+    if (WiFi_code==1)
+    {
+        refreshNow();
+        ui_update_departure_table(&currentDepartures);
+    }
 
-  beginLvglHelper(amoled);   // init LVGL for this board
-
-  create_ui();
-  int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
-  
-  //Testing requests
-  int8_t request_result = 6;
-  if (WiFi_code==1)
-  {
-    request_result = request_send("740032188");
-  }
-  if (request_result >= 4)
-  {
-    Serial.println ("Request failed");
-    //Possible event here
-  }
-}
+    else
+    {
+        ui_update_live_status_display("Update failed");
+    }
+    }
 
 // Must have function: Loop runs continously on device after setup
 void loop()
 {
-  //when ready - current_stop variable should be here 
-  const Stop& current_stop = STOPS[0]; //Placeholder; When proper objects are ready - should be replaced
+lv_timer_handler();
 
-  //US4.1: As a user, I want the live departure data to update automatically in 60 seconds
+    //Implementing TouchInput, revorking loop.
+    //NOT TESTED YET!
+    if (touch_input_has_event())
+    {
 
-  static uint32_t lastRefresh = 0;
+        //Getting current input event
+        InputEvent event = touch_input_get_event();
 
-if (millis() - lastRefresh >= 60000) {
+        switch (event)
+        {
+            case SETTINGS_BUTTON:
+                lv_obj_set_tile_id(tileview, 2, 0, LV_ANIM_ON); //Changing to the settings screen
 
-    int8_t request_status = refresh_departures(current_stop.id);
-    
-    //If request_status >=3 - error, else OK
-    
-    lastRefresh = millis();
-}
+                break;
 
+            case REFRESH_BUTTON:
+                if (millis() - lastRefresh >= 5000){
+                    refreshNow();
+                }
 
-  lv_timer_handler();
-  delay(5);
+                break;
+
+            case STOP_DROPDOWN:
+            {
+                //Avaliable stops
+                uint16_t index = lv_dropdown_get_selected(dropdown_stops); //get stop index from dropdown
+                
+                if (index < STOP_COUNT && selectStop(index))
+                {
+                    //Changing current stop data
+                    ui_set_current_stop(currentStop.name);
+
+                    applySettings();
+                }
+
+                break;
+            }
+
+            case TRANSPORT_DROPDOWN:
+            {
+                //Avaliable transport types
+                uint16_t index = lv_dropdown_get_selected(dropdown_transport); //get transport index from dropdown
+                
+                const char* labels[] = {
+                    "All Transport Types",
+                    "Bus",
+                    "Train",
+                    "Ferry"
+                };
+                
+                if (index < 4)
+                {
+                    //Changing current transport type data
+                    ui_set_current_transport(labels[index]);
+                    applySettings();
+                }
+
+                break;
+            }
+
+            case SAVE_BUTTON:
+            {
+                saveSettings();
+                
+                break;
+            }
+
+            case RESET_BUTTON:
+            {
+                restoreSettings();
+
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    if (millis() - lastRefresh >= 60000)
+        refreshNow();
+
+    delay(5);
 }
