@@ -34,6 +34,8 @@ static lv_obj_t* t_journey;
 static lv_obj_t* t_departures;
 static lv_obj_t* t_settings;
 
+static lv_obj_t *journey_table = NULL;
+
 static lv_obj_t *dep_list_container = NULL;
 static lv_obj_t *dep_table = NULL;
 
@@ -52,16 +54,16 @@ static lv_obj_t *btn_refresh = NULL;
 static lv_obj_t *lbl_wifi_status = NULL;
 static lv_obj_t *lbl_live_status = NULL;
 
-const char* DEFAULT_STOP = "Campus Gräsvik";
-const char* DEFAULT_TRANSPORT = "All Transport Types";
+const String DEFAULT_STOP = "Campus Gräsvik";
+const String DEFAULT_TRANSPORT = "All Transport Types";
 
-std::string current_stop_name = DEFAULT_STOP;
-std::string current_transport_type = DEFAULT_TRANSPORT;
+String current_stop_name = DEFAULT_STOP;
+String current_transport_type = DEFAULT_TRANSPORT;
 
 
 // Saved user settings
-std::string saved_stop_name = DEFAULT_STOP;
-std::string saved_transport_type = DEFAULT_TRANSPORT;
+String saved_stop_name = DEFAULT_STOP;
+String saved_transport_type = DEFAULT_TRANSPORT;
 
 // Stores the latest successfully parsed departures for Campus Gräsvik
 StopData currentDepartures{STOPS[0].name, STOPS[0].id};
@@ -75,7 +77,7 @@ LilyGo_Class amoled;
 
 // function that sets unic demodata based on both stop and transport type
 void ui_load_demo_data(const char* stopName, const char* transportType) {
-    if (!dep_table || current_stop_name.empty()) return;
+    if (!dep_table || current_stop_name.isEmpty()) return;
 
     char stopLabel[128];
     snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopName, transportType);
@@ -91,8 +93,8 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
     int currentRow = 1;
 
     // --- CAMPUS GRÄSVIK ---
-    if (strcmp(stopName, "Campus Gräsvik") == 0) {
-        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+    if (strcmp(stopName, "CAMPUS GRÄSVIK") == 0) {
+        if (strcmp(transportType, "ALL TRANSPORT TYPES") == 0 || strcmp(transportType, "Bus") == 0) {
             lv_table_set_cell_value(dep_table, currentRow, 0, "12:15"); 
             lv_table_set_cell_value(dep_table, currentRow, 1, "3"); 
             lv_table_set_cell_value(dep_table, currentRow, 2, "Wämö");
@@ -102,7 +104,7 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
             lv_table_set_cell_value(dep_table, currentRow, 2, "Centralstationen");
             currentRow++;
         }
-        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Ferry") == 0) {
+        if (strcmp(transportType, "ALL TRANSPORT TYPES") == 0 || strcmp(transportType, "Ferry") == 0) {
             lv_table_set_cell_value(dep_table, currentRow, 0, "12:45"); 
             lv_table_set_cell_value(dep_table, currentRow, 1, "Färja"); 
             lv_table_set_cell_value(dep_table, currentRow, 2, "Hasslö");
@@ -110,8 +112,8 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
         }
     }
     // --- KARLSKRONA CENTRALSTATION ---
-    else if (strcmp(stopName, "Karlskrona Centralstation") == 0) {
-        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Train") == 0) {
+    else if (strcmp(stopName, "KARLSKRONA CENTRALSTATION") == 0) {
+        if (strcmp(transportType, "ALL TRANSPORT TYPES") == 0 || strcmp(transportType, "Train") == 0) {
             lv_table_set_cell_value(dep_table, currentRow, 0, "12:10"); 
             lv_table_set_cell_value(dep_table, currentRow, 1, "Tåg"); 
             lv_table_set_cell_value(dep_table, currentRow, 2, "Malmö C");
@@ -121,7 +123,7 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
             lv_table_set_cell_value(dep_table, currentRow, 2, "Göteborg C");
             currentRow++;
         }
-        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+        if (strcmp(transportType, "ALL TRANSPORT TYPES") == 0 || strcmp(transportType, "Bus") == 0) {
             lv_table_set_cell_value(dep_table, currentRow, 0, "12:20"); 
             lv_table_set_cell_value(dep_table, currentRow, 1, "1"); 
             lv_table_set_cell_value(dep_table, currentRow, 2, "Bergåsa");
@@ -129,8 +131,8 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
         }
     }
     // --- KARLSKRONA CENTRUM ---
-    else if (strcmp(stopName, "Karlskrona centrum") == 0) {
-        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+    else if (strcmp(stopName, "KARLSKRONA CENTRUM") == 0) {
+        if (strcmp(transportType, "ALL TRANSPORT TYPES") == 0 || strcmp(transportType, "Bus") == 0) {
             lv_table_set_cell_value(dep_table, currentRow, 0, "12:12"); 
             lv_table_set_cell_value(dep_table, currentRow, 1, "5"); 
             lv_table_set_cell_value(dep_table, currentRow, 2, "Hästö");
@@ -142,8 +144,8 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
         }
     }
     // --- KUNGSPLAN ---
-    else if (strcmp(stopName, "Kungsplan") == 0) {
-        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+    else if (strcmp(stopName, "KUNGSPLAN") == 0) {
+        if (strcmp(transportType, "ALL TRANSPORT TYPES") == 0 || strcmp(transportType, "Bus") == 0) {
             lv_table_set_cell_value(dep_table, currentRow, 0, "12:18"); 
             lv_table_set_cell_value(dep_table, currentRow, 1, "2"); 
             lv_table_set_cell_value(dep_table, currentRow, 2, "IKEA");
@@ -151,14 +153,14 @@ void ui_load_demo_data(const char* stopName, const char* transportType) {
         }
     }
     // --- BERGÅSA STATION ---
-    else if (strcmp(stopName, "Bergåsa station") == 0) {
-        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Train") == 0) {
+    else if (strcmp(stopName, "BERGÅSA STATION") == 0) {
+        if (strcmp(transportType, "ALL TRANSPORT TYPES") == 0 || strcmp(transportType, "Train") == 0) {
             lv_table_set_cell_value(dep_table, currentRow, 0, "12:05"); 
             lv_table_set_cell_value(dep_table, currentRow, 1, "Tåg"); 
             lv_table_set_cell_value(dep_table, currentRow, 2, "Karlskrona C");
             currentRow++;
         }
-        if (strcmp(transportType, "All Transport Types") == 0 || strcmp(transportType, "Bus") == 0) {
+        if (strcmp(transportType, "ALL TRANSPORT TYPES") == 0 || strcmp(transportType, "Bus") == 0) {
             lv_table_set_cell_value(dep_table, currentRow, 0, "12:20"); 
             lv_table_set_cell_value(dep_table, currentRow, 1, "7"); 
             lv_table_set_cell_value(dep_table, currentRow, 2, "Blekingesjukhuset");
@@ -179,7 +181,7 @@ void ui_update_live_status_display(const char* statusText);
 
 static lv_obj_t *add_refresh_button(lv_obj_t *parent) {
     lv_obj_t *btn_refresh = lv_btn_create(parent);
-    lv_obj_set_size(btn_refresh, 40, 40);
+    lv_obj_set_size(btn_refresh, 50, 50);
 
     lv_obj_t *lbl_ref_icon = lv_label_create(btn_refresh);
     lv_label_set_text(lbl_ref_icon, LV_SYMBOL_REFRESH);
@@ -202,36 +204,41 @@ static void create_departure_table(lv_obj_t* parent) {
     // Container for dep.table
     dep_list_container = lv_obj_create(parent);
 
-    lv_obj_set_size(dep_list_container, 400, 300);
-    lv_obj_align(dep_list_container, LV_ALIGN_CENTER, 0, 15);
+    lv_obj_set_size(dep_list_container, 580, 380);
+    lv_obj_align(dep_list_container, LV_ALIGN_CENTER, 0, 30);
     lv_obj_set_flex_flow(dep_list_container, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_scrollbar_mode(dep_list_container, LV_SCROLLBAR_MODE_AUTO);
+    lv_obj_set_scroll_dir(dep_list_container, LV_DIR_VER);
+    lv_obj_set_style_pad_all(dep_list_container, 0, LV_PART_MAIN);
 
     // Refresh btn
-    btn_refresh = add_refresh_button(dep_list_container);
-    lv_obj_align(btn_refresh, LV_ALIGN_TOP_RIGHT, -5, -45);
+    btn_refresh = add_refresh_button(t_departures);
+    lv_obj_align(btn_refresh, LV_ALIGN_TOP_LEFT, 10, 10);
 
     dep_table = lv_table_create(dep_list_container);
-    lv_obj_set_size(dep_table, 380, 280);
+    lv_obj_set_size(dep_table, lv_pct(100), lv_pct(100));
+    // lv_obj_set_size(dep_table, 590, 390);
 
     lv_table_set_row_cnt(dep_table, 6); // 1 header row + 5 departure rows
    
     // Column-width
-    lv_table_set_col_width(dep_table, 0, 110);   // Time
-    lv_table_set_col_width(dep_table, 1, 80);   // Line
-    lv_table_set_col_width(dep_table, 2, 190);  // Destination
+    lv_table_set_col_width(dep_table, 0, 180);   // Time
+    lv_table_set_col_width(dep_table, 1, 130);   // Line
+    lv_table_set_col_width(dep_table, 2, 270);  // Destination
 
     // Header row
     lv_table_set_cell_value(dep_table, 0, 0, "Time");
     lv_table_set_cell_value(dep_table, 0, 1, "Line");
     lv_table_set_cell_value(dep_table, 0, 2, "Destination");
+    lv_obj_set_style_text_align(dep_table, LV_TEXT_ALIGN_CENTER, LV_PART_ITEMS);
 
 }
 
 
 
 
-static lv_obj_t *add_stop_label(lv_obj_t *parent, const char* stopName, const char* transportType) {
+static lv_obj_t *add_stop_label(lv_obj_t *parent, const char* stopName, const char* transportType) 
+{
     lbl_stopLabel = lv_label_create(parent);
 
     char initStopLabel[128];
@@ -285,6 +292,63 @@ void ui_set_current_transport(const char* transportType)
 }
 
 
+void ui_journey_table(lv_obj_t* parent){
+
+    lv_obj_t* journey_label = lv_label_create(parent);
+    lv_label_set_text(journey_label, "Journey Details");
+    lv_obj_align(journey_label, LV_ALIGN_TOP_LEFT, 20, 50);
+
+    lv_obj_t* journey_container = lv_table_create(parent);
+    lv_obj_set_size(journey_container, 560, 310);
+    lv_obj_align(journey_container, LV_ALIGN_CENTER, 0, 60);
+    lv_obj_set_style_pad_all(journey_container, 0, LV_PART_MAIN);
+    lv_obj_set_scrollbar_mode(journey_container, LV_SCROLLBAR_MODE_AUTO);
+    lv_obj_set_scroll_dir(journey_container, LV_DIR_VER);
+
+
+    lv_obj_t* journey_table = lv_table_create(journey_container);
+    lv_obj_set_size(journey_table, lv_pct(100), lv_pct(100));
+
+    lv_table_set_row_cnt(journey_table, 6);
+    lv_table_set_col_cnt(journey_table, 2); 
+
+    lv_table_set_col_width(journey_table, 0, 310);   // Stop
+    lv_table_set_col_width(journey_table, 1, 250);   // Time
+
+    // Header row
+    lv_table_set_cell_value(journey_table, 0, 0, "Bus Stop");
+    lv_table_set_cell_value(journey_table, 0, 1, "Arrival Time");
+
+    lv_obj_set_style_text_align(journey_table, LV_TEXT_ALIGN_CENTER, LV_PART_ITEMS);
+
+     lv_obj_set_style_text_font(journey_table, &montserrat_swedish_14, LV_PART_ITEMS);
+}
+
+
+
+void ui_update_journey_table(const StopData *stopData, const Departure *departure, int nrStops) {
+    if (!journey_table || !stopData) return;
+
+    lv_obj_t* journey_lbl = lv_label_create(t_journey);
+
+    char stopLabel[128];
+    snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), departure->getDestination().c_str());
+    lv_label_set_text(journey_lbl, stopLabel);
+
+    for (int r = 1; r <= nrStops; r++) {
+        lv_table_set_cell_value(journey_table, r, 0, "");
+        lv_table_set_cell_value(journey_table, r, 1, ""); 
+    }
+
+
+    /* example for how the journey table could be updated with stops and arrival times
+    for (const auto& stop : departure->getStops()) {
+        lv_table_set_cell_value(journey_table, currentRow, 0, stop.getName().c_str());
+        lv_table_set_cell_value(journey_table, currentRow, 1, stop.getArrivalTime().c_str());
+    }
+    */
+}
+
 
 // Function to create the UI
 static void create_ui()
@@ -332,21 +396,17 @@ static void create_ui()
   // --- 2. JOURNEY SCREEN (Tile 1) ---
   {
     lv_obj_t *title = lv_label_create(t_journey);
-    lv_label_set_text(title, "Journey");
+    lv_label_set_text(title, "Journey: Choose a Destination From Departure Screen");
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
 
     // Coming soon US 5.1: Dropdown for stops and destinations? , when clicked - 
     // should show a table (eg. 10 row and column) over all the stops on that departure where the last stop is the destination.
 
-    // TEST label for Swedish characters
-    lv_obj_t *test_label = lv_label_create(lv_scr_act());
-    lv_label_set_text( test_label, "Svenska: å ä ö Å Ä Ö");
+    ui_journey_table(t_journey);
 
-    lv_obj_set_style_text_font( test_label, &montserrat_swedish_14, 0 );
-    lv_obj_align( test_label, LV_ALIGN_CENTER, 0, 0 );
 
-    
-    // contents
+
+   
   }
 
   
@@ -358,13 +418,10 @@ static void create_ui()
     lv_label_set_text(title, "Departures");
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
 
-    // lbl_stopLabel should change dynamically based on users choice in settings (dropdown_stops)
-    lbl_stopLabel = add_stop_label(t_departures, DEFAULT_STOP, DEFAULT_TRANSPORT);
+    lbl_stopLabel = add_stop_label(t_departures, DEFAULT_STOP.c_str(), DEFAULT_TRANSPORT.c_str());
     lv_obj_align(lbl_stopLabel, LV_ALIGN_TOP_MID, 0, 40);
 
     create_departure_table(t_departures);
-
-    // upload data (departures) from here:
 
   }
 
@@ -386,33 +443,33 @@ static void create_ui()
     lv_obj_set_style_text_font(lbl_live_status, &lv_font_montserrat_14, 0);
     lv_obj_align(lbl_live_status, LV_ALIGN_TOP_MID, 0, 55);
 
-    // Dropdown for bus stops
-    lv_obj_t *stops = lv_label_create(t_settings);
-    lv_label_set_text(stops, "Campus Gräsvik\nKarlskrona Centralstation\nKarlskrona centrum\nKungsplan\nBergåsa station");
-    lv_obj_set_style_text_font(stops, &montserrat_swedish_14, 0);
-
     dropdown_stops = lv_dropdown_create(t_settings);
-    lv_dropdown_set_options(dropdown_stops, lv_label_get_text(stops));
+    lv_dropdown_set_options(dropdown_stops, "Campus Gräsvik\nKarlskrona Centralstation\nKarlskrona Centrum\nKungsplan\nBergåsa Station");
+    lv_obj_t *list = lv_dropdown_get_list(dropdown_stops);
+
+    lv_obj_set_style_text_font(list, &montserrat_swedish_14, 0);
+    lv_obj_set_style_text_font(dropdown_stops, &montserrat_swedish_14, LV_PART_MAIN);
+    lv_obj_set_style_text_font(dropdown_stops,LV_FONT_DEFAULT, LV_PART_INDICATOR);
     lv_obj_set_size(dropdown_stops, 230, 55);
-    lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -35);
+    lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -40);
 
     // Dropdown for transport types
     dropdown_transport = lv_dropdown_create(t_settings);
     lv_dropdown_set_options(dropdown_transport, "All Transport Types\nBus\nTrain\nFerry");
     lv_obj_set_size(dropdown_transport, 230, 55);
-    lv_obj_align(dropdown_transport, LV_ALIGN_CENTER, 0, 25);
+    lv_obj_align(dropdown_transport, LV_ALIGN_CENTER, 0, 30);
 
     // Save and Reset buttons
     btn_save = lv_btn_create(t_settings);
     lv_obj_set_size(btn_save, 115, 50);
-    lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -55, -35);
+    lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -65, -35);
     lv_obj_t *lbl_save = lv_label_create(btn_save);
     lv_label_set_text(lbl_save, "Save");
     lv_obj_center(lbl_save);
 
     btn_reset = lv_btn_create(t_settings);
     lv_obj_set_size(btn_reset, 115, 50);
-    lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 55, -35);
+    lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 65, -35);
     lv_obj_t *lbl_reset = lv_label_create(btn_reset);
     lv_label_set_text(lbl_reset, "Reset");
     lv_obj_center(lbl_reset);
@@ -432,60 +489,63 @@ void ui_apply_user_settings(const char* selectedStop, const char* selectedTransp
     ui_load_demo_data(selectedStop, selectedTransport);
 }
 
-
-// Function for updating the departure table with new live data from the network/logic module
 void ui_update_departure_table(const StopData *stopData) {
-    if ( !stopData || !dep_table && current_stop_name.empty() ) { // controll current_stop_name is not empty
-        ui_update_live_status_display("No Departures");
-        return;   
-    }  
 
-    // Update title with the active stop (the one the user has selected)
+    if (stopData == nullptr || dep_table == nullptr) {
+        ui_update_live_status_display("No Departures");
+        return;
+    }
+
+    // Update stop label
     char stopLabel[128];
-    // Use c_str() because %s expects a const char* (C-style string)
     snprintf(stopLabel, sizeof(stopLabel), "Stop: %s [%s]", stopData->getName().c_str(), current_transport_type.c_str());
     lv_label_set_text(lbl_stopLabel, stopLabel);
 
-    ui_update_live_status_display("Live Data: Active (Trafiklab)"); // Update live status
+    ui_update_live_status_display("Live Data: Active (Trafiklab)");
+
+    // Clear previous departure data
+    for (int row = 1; row <= 5; row++) {
+        lv_table_set_cell_value(dep_table, row, 0, "");
+        lv_table_set_cell_value(dep_table, row, 1, "");
+        lv_table_set_cell_value(dep_table, row, 2, "");
+    }
+
 
     for (int i = 0; i < stopData->getCount() && i < 5; i++) {
+
         const Departure* departure = stopData->getDeparture(i);
+        if (departure == nullptr) continue;
+
         int rowIndex = i + 1;
 
-        // bool matches = strcmp(departure->getTransportMode().c_str(), current_transport_type.c_str()) == 0 || strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0;
+        String timeStatus = departure->getTime() + " - " + departure->getStatus();
 
-        // if(!matches) {
-        //     // Om transporttypen inte matchar, hoppa över denna avgång
-        //     continue;
-        // }  
-        
-        // if (departure != nullptr && matches)
-        // Uppdatera current_transport_type med transporttypen från avgången
+        lv_table_set_cell_value(dep_table, rowIndex, 0, timeStatus.c_str());
 
-        if (departure != nullptr) {
-            Serial.println(departure->getTransportMode().c_str());
-            std::string timeStatus = std::string(departure->getTime().c_str()) + " - " + (departure->getStatus().c_str());
-
-            lv_table_set_cell_value( dep_table, rowIndex, 0, timeStatus.c_str() );
-
-            if ( strcmp(current_transport_type.c_str(), DEFAULT_TRANSPORT) == 0 ) {
-                String mode_line = departure->getLine() + String(" / ") + departure->getTransportMode();
-                lv_table_set_cell_value( dep_table, rowIndex, 1, mode_line.c_str() );
-            }
-            else {
-                lv_table_set_cell_value( dep_table, rowIndex, 1, departure->getLine().c_str() );
-            }
-
-            lv_table_set_cell_value( dep_table, rowIndex, 2, departure->getDestination().c_str() );
-        }
+        if (current_transport_type.equalsIgnoreCase(DEFAULT_TRANSPORT)) {
+            String mode_line = departure->getLine() + String(" / ") + departure->getTransportMode();
+            lv_table_set_cell_value(dep_table, rowIndex, 1, mode_line.c_str());
+        } 
 
         else {
-            lv_table_set_cell_value(dep_table, rowIndex, 0, "--:--");
-            lv_table_set_cell_value(dep_table, rowIndex, 1, "-");
-            lv_table_set_cell_value(dep_table, rowIndex, 2, "No departures");
+                lv_table_set_cell_value(dep_table, rowIndex, 1, departure->getLine().c_str());
+        }
+
+        lv_table_set_cell_value(dep_table, rowIndex, 2, departure->getDestination().c_str());
+    }
+
+
+    if (stopData->getCount() == 0) {
+        for (int row = 1; row <= 5; row++) {
+            lv_table_set_cell_value(dep_table, row, 0, "--:--");
+            lv_table_set_cell_value(dep_table, row, 1, "-");
+            lv_table_set_cell_value(dep_table, row, 2, "No departures");
         }
     }
+
+    lv_obj_set_style_text_font(dep_table, &montserrat_swedish_14, LV_PART_ITEMS);
 }
+
 
 // Function for updating Wi-Fi status on the screen
 void ui_update_wifi_status_display(const char* statusText) {
@@ -588,7 +648,7 @@ void restoreSettings()
     lv_dropdown_set_selected(dropdown_stops, 0);
 
     //current_transport_type = DEFAULT_TRANSPORT;
-    ui_set_current_transport(DEFAULT_TRANSPORT);
+    ui_set_current_transport(DEFAULT_TRANSPORT.c_str());
     lv_dropdown_set_selected(dropdown_transport, 0);
 
     applySettings();
