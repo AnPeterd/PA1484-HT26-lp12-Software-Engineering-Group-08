@@ -132,7 +132,7 @@ int8_t refresh_departures(String stop_id, StopData& result, const String& transp
 
 int8_t route_refresh (String start_stop_id, String end_stop_id, JourneyResults& result)
 {
-  String url = String("https://api.resrobot.se/v2.1/trip?originId=") + start_stop_id + "&destId=" + end_stop_id + "&format=json&numF=3&passlist=0&poly=0&accessId=" + RESROBOT_API_KEY; // creation of URL for the upcoming request
+  String url = String("https://api.resrobot.se/v2.1/trip?originId=") + start_stop_id + "&destId=" + end_stop_id + "&format=json&numF=5&passlist=0&poly=0&accessId=" + RESROBOT_API_KEY; // creation of URL for the upcoming request
   int8_t refresh_status = request_send(url, nullptr, "ALL", &result, 0);
   return refresh_status;
 
