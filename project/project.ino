@@ -68,6 +68,8 @@ String saved_transport_type = DEFAULT_TRANSPORT;
 
 // Stores the latest successfully parsed departures for Campus Gräsvik
 StopData currentDepartures{STOPS[0].name, STOPS[0].id};
+//Same idea for journeys
+JourneyResults currentJourneys;
 
 uint32_t lastRefresh = 0;
 
@@ -742,19 +744,22 @@ void setup()
     int8_t WiFi_code = connect_wifi(); // if WiFi_code != 1 -> WiFi not connected (for 4.3)
     
     loadSettings();
-    
-    // Testing requests
-    // int8_t request_result = 6;
-    
-    if (WiFi_code==1)
-    {
-        refreshNow();
-        ui_update_departure_table(&currentDepartures);
-    }
 
-    else
+    //testing journey request
+    int8_t route_status = route_refresh(STOPS[6].id, STOPS[5].id, currentJourneys);
+    Serial.println( route_status); 
+    Serial.println(currentJourneys.getCount());
+
+    if (route_status == 2)
     {
-        ui_update_live_status_display("Update failed");
+        //Test print of the first found journey
+        const Journey* journey = currentJourneys.getJourney(0);
+
+        Serial.println(journey->getOriginName());
+        Serial.println(journey->getDestinationName());
+        Serial.println(journey->getOriginTime());
+        Serial.println(journey->getDestinationTime());
+        Serial.println(journey->getLegCount());
     }
     }
 
@@ -764,7 +769,6 @@ void loop()
 lv_timer_handler();
 
     //Implementing TouchInput, revorking loop.
-    //NOT TESTED YET!
     if (touch_input_has_event())
     {
 

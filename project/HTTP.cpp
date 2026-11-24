@@ -2,7 +2,7 @@
 #include "secrets.h"
 #include "departure_parser.hpp"
 
-int8_t request_send (String url, StopData& result, const String& transport, StopData& result_route, int8_t request_type)
+int8_t request_send (String url, StopData* result, const String& transport, JourneyResults* result_route, int8_t request_type)
 {
 
   if (WiFi.status()!= WL_CONNECTED)
@@ -50,14 +50,14 @@ int8_t request_send (String url, StopData& result, const String& transport, Stop
 
     bool parsed = false;
 
-    if (request_type ==1) //departure type
+    if (request_type == 1 && result != nullptr) //departure type
     {
-      parsed = parseDepartures(http.getStream(), result, transport);
+      parsed = parseDepartures(http.getStream(), *result, transport);
     }
 
-    else if (request_type == 0)
+    else if (request_type == 0 && result_route != nullptr)
     {
-      parsed = true; //Parcer function here
+       parsed = parseJourneys(http.getStream(), *result_route);
     }
 
         http.end(); //closing the HTTP connection
@@ -77,7 +77,7 @@ int8_t refresh_departures(String stop_id, StopData& result, const String& transp
 {
   StopData dummy{"", ""};
   String url = String("https://realtime-api.trafiklab.se/v1/departures/") + stop_id + "?key=" + API_KEY;
-    int8_t refresh_status = request_send(url, result, transport, dummy, 1);
+    int8_t refresh_status = request_send(url, &result, transport, nullptr, 1);
     if (refresh_status >= 3)
     {
       wl_status_t wifi_status = WiFi.status();
@@ -91,7 +91,7 @@ int8_t refresh_departures(String stop_id, StopData& result, const String& transp
         else
         {
           // Wi-Fi recovered - retry request
-           refresh_status = request_send(url, result, transport, dummy, 1);
+           refresh_status = request_send(url, &result, transport, nullptr, 1);
            
           // No further recovery attempts are made if the retry fails
         }
@@ -130,11 +130,10 @@ int8_t refresh_departures(String stop_id, StopData& result, const String& transp
 
 
 
-int8_t route_refresh (String start_stop_id, String end_stop_id, StopData& result)
+int8_t route_refresh (String start_stop_id, String end_stop_id, JourneyResults& result)
 {
-  StopData dummy{"", ""};//Object used for the irrelevent data type
   String url = String("https://api.resrobot.se/v2.1/trip?originId=") + start_stop_id + "&destId=" + end_stop_id + "&format=json&numF=3&passlist=0&poly=0&accessId=" + RESROBOT_API_KEY; // creation of URL for the upcoming request
-  int8_t refresh_status = request_send(url, dummy, "ALL", result, 0);
+  int8_t refresh_status = request_send(url, nullptr, "ALL", &result, 0);
   return refresh_status;
 
 }
