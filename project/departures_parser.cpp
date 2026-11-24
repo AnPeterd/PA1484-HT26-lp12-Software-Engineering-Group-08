@@ -84,7 +84,7 @@ bool parseDepartures(Stream& input, StopData& result, const String& selectedTran
 
         int timeSeparator = time.indexOf('T');
         if(timeSeparator < 0 || time.length() < timeSeparator + 6){ return false; }
-        time = time.substring(timeSeparator+1, timeSeparator+9);
+        time = time.substring(timeSeparator+1, timeSeparator+6);
 
         String status = "Status unknown";
 
