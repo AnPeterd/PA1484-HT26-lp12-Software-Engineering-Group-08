@@ -20,6 +20,7 @@
 
 // Swedish font
 LV_FONT_DECLARE(montserrat_swedish_14);
+LV_FONT_DECLARE(montserrat_swedish_16);
 
 #include <iostream>
 #include <algorithm>
@@ -204,7 +205,7 @@ static void create_departure_table(lv_obj_t* parent) {
     // Container for dep.table
     dep_list_container = lv_obj_create(parent);
 
-    lv_obj_set_size(dep_list_container, 580, 380);
+    lv_obj_set_size(dep_list_container, 580, 360);
     lv_obj_align(dep_list_container, LV_ALIGN_CENTER, 0, 30);
     lv_obj_set_flex_flow(dep_list_container, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_scrollbar_mode(dep_list_container, LV_SCROLLBAR_MODE_AUTO);
@@ -214,6 +215,7 @@ static void create_departure_table(lv_obj_t* parent) {
     // Refresh btn
     btn_refresh = add_refresh_button(t_departures);
     lv_obj_align(btn_refresh, LV_ALIGN_TOP_LEFT, 10, 10);
+    lv_obj_set_size(btn_refresh, 60, 60);
 
     dep_table = lv_table_create(dep_list_container);
     lv_obj_set_size(dep_table, lv_pct(100), lv_pct(100));
@@ -230,7 +232,6 @@ static void create_departure_table(lv_obj_t* parent) {
     lv_table_set_cell_value(dep_table, 0, 1, "Line");
     lv_table_set_cell_value(dep_table, 0, 2, "Destination");
     lv_obj_set_style_text_align(dep_table, LV_TEXT_ALIGN_CENTER, LV_PART_ITEMS);
-
 }
 
 
@@ -411,7 +412,7 @@ static void create_ui()
   
   // --- 3. DEPARTURES SCREEN (Tile 2) ---
   {
-    add_settings_button(t_departures);
+    // add_settings_button(t_departures);
 
     lv_obj_t *title = lv_label_create(t_departures);
     lv_label_set_text(title, "Departures");
@@ -446,31 +447,37 @@ static void create_ui()
     lv_dropdown_set_options(dropdown_stops, "Campus Gräsvik\nKarlskrona Centralstation\nKarlskrona Centrum\nKungsplan\nBergåsa Station");
     lv_obj_t *list = lv_dropdown_get_list(dropdown_stops);
 
-    lv_obj_set_style_text_font(list, &montserrat_swedish_14, 0);
-    lv_obj_set_style_text_font(dropdown_stops, &montserrat_swedish_14, LV_PART_MAIN);
+    lv_obj_set_style_text_font(list, &montserrat_swedish_16, 0);
+    // lv_obj_set_style_text_font(list, &lv_font_montserrat_16, 0);
+
+    lv_obj_set_style_text_font(dropdown_stops, &montserrat_swedish_16, LV_PART_MAIN);
+    // lv_obj_set_style_text_font(dropdown_stops, &lv_font_montserrat_16, LV_PART_MAIN);
+
     lv_obj_set_style_text_font(dropdown_stops,LV_FONT_DEFAULT, LV_PART_INDICATOR);
     lv_obj_set_size(dropdown_stops, 230, 55);
     lv_obj_align(dropdown_stops, LV_ALIGN_CENTER, 0, -40);
 
     // Dropdown for transport types
     dropdown_transport = lv_dropdown_create(t_settings);
-    lv_dropdown_set_options(dropdown_transport, "All Transport Types\nBus\nTrain\nFerry");
+    lv_dropdown_set_options(dropdown_transport, "All Transport Types\nBus\nTrain\nFerry\nTaxi");
     lv_obj_set_size(dropdown_transport, 230, 55);
     lv_obj_align(dropdown_transport, LV_ALIGN_CENTER, 0, 30);
 
     // Save and Reset buttons
     btn_save = lv_btn_create(t_settings);
-    lv_obj_set_size(btn_save, 115, 50);
-    lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -65, -35);
+    lv_obj_set_size(btn_save, 135, 70);
+    lv_obj_align(btn_save, LV_ALIGN_BOTTOM_MID, -75, -45);
     lv_obj_t *lbl_save = lv_label_create(btn_save);
     lv_label_set_text(lbl_save, "Save");
+    lv_obj_set_style_text_font(lbl_save, &lv_font_montserrat_34, 0);
     lv_obj_center(lbl_save);
 
     btn_reset = lv_btn_create(t_settings);
-    lv_obj_set_size(btn_reset, 115, 50);
-    lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 65, -35);
+    lv_obj_set_size(btn_reset, 135, 70);
+    lv_obj_align(btn_reset, LV_ALIGN_BOTTOM_MID, 75, -45);
     lv_obj_t *lbl_reset = lv_label_create(btn_reset);
     lv_label_set_text(lbl_reset, "Reset");
+    lv_obj_set_style_text_font(lbl_reset, &lv_font_montserrat_34, 0);
     lv_obj_center(lbl_reset);
 
 
