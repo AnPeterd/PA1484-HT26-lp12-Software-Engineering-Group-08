@@ -141,7 +141,7 @@ void touch_input_init(
         lv_obj_add_event_cb(
             btn_reset,
             reset_pressed,
-            LV_EVENT_PRESSED,
+            LV_EVENT_CLICKED,
             NULL
         );
     }
