@@ -108,6 +108,9 @@ The project runs on:
 ### The Input module:
 
 ### The Data Parsing module:
+This module handles JSON data recieved from the Trafiklab API and stores the nessecary information in C++ objects, these objects are then used by the application to access the Trafiklab API data in a simple and effective way. 
+It handles the incoming data by reading API streams with Arduino-Json, and later it creates a Departure or a Journey object - which holds that API data in the object variables, which are accessed through functions. The departure-parser validates required JSON fields, applies the selected transport filter, uses real-time departure information when available and sorts the departures by time. For the journey specific objects, those contain one or more JourneyLeg object representing parts of the trip, such as a walk, bus, train, or ferry ride. Each leg stores its origin, destination, departure time, arrival time, transport type, line number and direction - which allows the UI to easily display transfers and the complete route between two selected stops, by calling the journey objects. 
+
 
 ### The Settings storage module:
 
